@@ -44,7 +44,10 @@ const createGates = (id, x = 90, y = 90) => ({
     position: { x, y },
     size: { width: 20, height: 20 },
     attrs: {
-      circle: { fill: 'red' }
+      circle: { fill: 'green' },
+      text: {
+        text: id
+      }
     },
     ports: { groups: { in: { id: id } } }
   }),
@@ -53,7 +56,10 @@ const createGates = (id, x = 90, y = 90) => ({
     position: { x, y },
     size: { width: 20, height: 20 },
     attrs: {
-      circle: { fill: 'red' }
+      circle: { fill: 'red' },
+      text: {
+        text: 'Output'
+      }
     },
     ports: { groups: { in: { id: id } } }
   })
