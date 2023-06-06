@@ -6,21 +6,22 @@ import createGates from './Gates'
 import { getIslands } from '../services/grouping'
 import { createWire } from '../services/common'
 
-const DiagramComponent = () => {
+const DiagramComponent = props => {
   const diagramRef = useRef(null)
   const { kMap, setkMap } = useSelector(state => state)
   const [exp, setExp] = useState([])
+  const variables = props.variables ? props.variables : ['A', 'B', 'C', 'D']
 
-  // const expression = `A'C' + BC' + A'D + ACD'`
-  const variables = ['A', 'B', 'C', 'D']
   useEffect(
     () => {
-      if (!kMap.isNull) setExp(getIslands(kMap.data))
+      if (!kMap.isNull) {
+        const expression = getIslands(kMap.data, variables)
+        console.log('Expression from grouping', expression)
+        setExp(expression === '1' ? `A+B` : expression)
+      }
     },
     [kMap]
   )
-
-  console.log('expression from grouping ', exp)
 
   useEffect(
     () => {
@@ -30,7 +31,7 @@ const DiagramComponent = () => {
   )
 
   function createCircuit() {
-    if (exp.length < 1) return
+    if (!exp || exp.length < 1) return
 
     const graph = new dia.Graph()
     const paper = new dia.Paper({
@@ -94,18 +95,26 @@ const DiagramComponent = () => {
 
       gates[part] = gate
     })
-    const orGate = createGates('or', 700, 300).or
-    graph.addCell(orGate)
-
-    Object.values(gates).forEach(gate => {
-      const wire = createWire(gate, orGate)
-      graph.addCell(wire)
-    })
 
     const output = createGates('output', 900, 300).output
     graph.addCell(output)
+    let finalWire
+    console.log('gate', gates)
 
-    const finalWire = createWire(orGate, output)
+    const keys = Object.keys(gates)
+
+    if (keys.length > 1) {
+      const orGate = createGates('or', 700, 300).or
+      graph.addCell(orGate)
+
+      Object.values(gates).forEach(gate => {
+        const wire = createWire(gate, orGate)
+        graph.addCell(wire)
+      })
+
+      finalWire = createWire(orGate, output)
+    } else finalWire = createWire(gates[keys[0]], output)
+
     graph.addCell(finalWire)
   }
 

@@ -1,105 +1,127 @@
-import React from "react";
-import useStyles from "./styles";
+import React, { useEffect, useState } from 'react'
+import useStyles from './styles'
 
-import { styled } from "@mui/material/styles";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell, { tableCellClasses } from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
+import { useRef } from 'react'
+import { useDispatch } from 'react-redux'
+import { addKMap } from '../../actions'
+
+import {
+  decimalToBinary,
+  binaryToGray,
+  threeVariables
+} from '../../services/common'
+
+/**Material UI components */
+import { styled } from '@mui/material/styles'
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell, { tableCellClasses } from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
+import Paper from '@mui/material/Paper'
 
 export default function Kmap(props) {
-  const classes = useStyles();
-  let row = props.row;
-  let col = props.col;
-  let positionalArray = [];
-  let kMapValue = [];
-  let inputArray = [2, 3, 5];
-  let variableCount = 3;
-  let variables = ["A", "B", "C"];
-  let verticleElement = variables.slice(0, Math.floor(variables.length / 2));
-  let horizontalElement = variables.slice(Math.floor(variables.length / 2));
+  const dispatch = useDispatch()
+  const inputRef = useRef(null)
+  const [positionalArray, setPositionalArray] = useState([])
+  const [kMapValue, setKMapValue] = useState([])
 
-  let verticleElementBitSize = Math.pow(2, verticleElement.length);
-  let horizontalElementBitSize = Math.pow(2, horizontalElement.length);
+  const classes = useStyles()
+  let variables = props.variables
+  let expression = props.expresion
+  let variableCount = variables.length
 
-  const tableSize = Math.pow(2, variableCount);
+  let rowElement = variables.slice(0, Math.floor(variables.length / 2))
+  let colElement = variables.slice(Math.floor(variables.length / 2))
 
-  // decimal to binary conversion
-  function toBinary(decimalNumber) {
-    return decimalNumber.toString(2).padStart(variableCount, "0");
-  }
-  // binary to gray code
-  function binaryToGray(binary) {
-    let gray = "";
-    gray += binary[0];
-    for (let i = 1; i < binary.length; i++) {
-      gray += binary[i - 1] ^ binary[i];
-    }
-    return gray;
-  }
+  let rowElementBitSize = Math.pow(2, rowElement.length)
+  let colElementBitSize = Math.pow(2, colElement.length)
+
+  const tableSize = Math.pow(2, variableCount)
 
   // get kmap positional array
   function getKmapPositionalArray(tableSize) {
+    let temp = []
     for (let i = 0; i < tableSize; i++) {
-      let graycode = binaryToGray(toBinary(i));
-      positionalArray.push(parseInt(graycode, 2));
+      let graycode = binaryToGray(decimalToBinary(i, variableCount))
+      temp.push(graycode)
     }
+    setPositionalArray(temp)
   }
 
-  // functional output
-  let kmapIndex = 0;
-  for (let j = 0; j < verticleElementBitSize; j++) {
-    kMapValue[j] = [];
-    for (let i = 0; i < tableSize / 2; i++) {
-      inputArray.includes(kmapIndex)
-        ? kMapValue[j].push(1)
-        : kMapValue[j].push(0);
-      kmapIndex++;
-    }
-  }
-  return (
-    <table border="1" className={classes.table}>
-      <thead>
-        <tr>
-          <th />
-          <th colSpan="5">
-            {horizontalElement.map(key => key)}
-          </th>
-        </tr>
-        <tr>
-          <th />
-          <th />
-          <th>00</th>
-          <th>01</th>
-          <th>11</th>
-          <th>10</th>
-        </tr>
-      </thead>
-      <tbody>
-        {horizontalElement.map((key, index) => {
-          return (
-            <tr key={index}>
-              <td className={classes.td}>
-                {verticleElement[index]}
-              </td>
-              <th className={classes.td}>
-                {index}
-              </th>
+  function getKMapValue(rowElementBitSize, tableSize) {
+    let newKMap = []
+    let kmapIndex = 0
 
-              {kMapValue[index].map((value, subIndex) => {
-                return (
-                  <td className={classes.td} key={subIndex}>
-                    {kMapValue[index][subIndex]}
-                  </td>
-                );
-              })}
-            </tr>
-          );
-        })}
-      </tbody>
-    </table>
-  );
+    expression.forEach(item => {
+      const key = threeVariables[item]
+      if (!newKMap[key[0]]) newKMap[key[0]] = []
+      newKMap[key[0]][key[1]] = 1
+    })
+
+    for (let j = 0; j < rowElementBitSize; j++)
+      for (let i = 0; i < colElementBitSize; i++)
+        if (newKMap[j][i] !== 1) newKMap[j][i] = 0
+
+    setKMapValue(newKMap)
+    return newKMap
+  }
+
+  useEffect(() => {
+    getKMapValue(rowElementBitSize, tableSize)
+    getKmapPositionalArray(tableSize)
+  }, [])
+
+  console.log('positionalArray', positionalArray)
+
+  useEffect(
+    () => {
+      dispatch(addKMap({ kMapValue, rowElement, colElement }))
+    },
+    [kMapValue]
+  )
+
+  return kMapValue.length < 1
+    ? <h6> Kmap Table</h6>
+    : <table border="1" className={classes.table}>
+        <thead>
+          <tr>
+            <th />
+            <th colSpan="5">
+              {colElement.map(key => key)}
+            </th>
+          </tr>
+          <tr>
+            <th />
+            <th />
+            <th>00</th>
+            <th>01</th>
+            <th>11</th>
+            <th>10</th>
+          </tr>
+        </thead>
+        <tbody>
+          {colElement.map((key, index) => {
+            return (
+              <tr key={index}>
+                <td className={classes.td}>
+                  {rowElement[index]}
+                </td>
+                <th className={classes.td}>
+                  {index}
+                </th>
+
+                {kMapValue[index].map((value, subIndex) => {
+                  return (
+                    <td className={classes.td} key={subIndex}>
+                      {kMapValue[index][subIndex]}
+                    </td>
+                  )
+                })}
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
 }

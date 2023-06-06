@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import CssBaseline from '@mui/material/CssBaseline'
@@ -9,23 +9,28 @@ import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
 import Grid from '@mui/material/Grid'
 import './App.css'
+
+/** Components imports */
 import TruthTable from './components/truthTable'
 import Kmap from './components/Kmap'
 import SideNavbar from './components/sideNavbar/SideNavbar.js'
 import Home from './components/home/Home.js'
+import SOP from './components/SOP.js'
 
 import useStyles from './styles'
 
 function App() {
+  const [mobileOpen, setMobileOpen] = useState(false)
+  const [variables, setvariables] = useState(['A', 'B', 'C'])
+  const [expresion, setExpression] = useState([1, 3, 7, 5])
+
+  const classes = useStyles()
+
   const drawerWidth = 240
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen)
   }
-
-  const [mobileOpen, setMobileOpen] = React.useState(false)
-  const classes = useStyles()
-
   return (
     <div className="App">
       <Box sx={{ display: 'flex' }}>
@@ -55,13 +60,13 @@ function App() {
         >
           {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
           <SideNavbar
-            // container={container}
             variant="temporary"
-            open={mobileOpen}
+            open={
+              mobileOpen // container={container}
+            }
             onClose={handleDrawerToggle}
-            ModalProps={{
-              keepMounted: true // Better open performance on mobile.
-            }}
+            ModalProps={{ keepMounted: true } // Better open performance on mobile.
+            }
             sx={{
               display: { xs: 'block', sm: 'none' },
               '& .MuiDrawer-paper': {
@@ -83,12 +88,15 @@ function App() {
 
           <Grid container>
             <Grid item xs={6}>
-              <TruthTable />
+              <TruthTable variables={variables} expresion={expresion} />
             </Grid>
             <Grid item xs={6}>
-              <Kmap />
+              <Kmap variables={variables} expresion={expresion} />
             </Grid>
           </Grid>
+          <SOP variables={variables} />
+
+          {/* <Project /> */}
         </Box>
       </Box>
     </div>
