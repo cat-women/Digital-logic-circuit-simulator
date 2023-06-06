@@ -16,7 +16,6 @@ const DiagramComponent = props => {
     () => {
       if (!kMap.isNull) {
         const expression = getIslands(kMap.data, variables)
-        console.log('Expression from grouping', expression)
         setExp(expression === '1' ? `A+B` : expression)
       }
     },
@@ -99,7 +98,6 @@ const DiagramComponent = props => {
     const output = createGates('output', 900, 300).output
     graph.addCell(output)
     let finalWire
-    console.log('gate', gates)
 
     const keys = Object.keys(gates)
 

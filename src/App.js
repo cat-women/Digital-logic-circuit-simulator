@@ -8,6 +8,7 @@ import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import TextField from '@mui/material/TextField'
 import Grid from '@mui/material/Grid'
+import Button from '@mui/material/Button'
 import './App.css'
 
 /** Components imports */
@@ -22,14 +23,28 @@ import useStyles from './styles'
 function App() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [variables, setvariables] = useState(['A', 'B', 'C'])
-  const [expresion, setExpression] = useState([1, 3, 7, 5])
-
+  const [expression, setExpression] = useState([1, 3, 7, 5])
+  const [input, setInput] = useState([])
   const classes = useStyles()
 
   const drawerWidth = 240
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen)
+  }
+  const handleNewExpression = e => {
+    const value = e.target.value
+    const newExpression = []
+    for (let i = 0; i < value.length; i++) {
+      const temp = value[i]
+      if (temp === `,`) continue
+      if (temp > 64 || temp < 0) alert('Enter valid number ')
+      newExpression.push(temp)
+    }
+    setInput(newExpression)
+  }
+  const handlelExpression = () => {
+    setExpression(input)
   }
   return (
     <div className="App">
@@ -39,6 +54,7 @@ function App() {
         <AppBar
           position="fixed"
           sx={{
+            background: 'white',
             width: { sm: `calc(100% - ${drawerWidth}px)` },
             ml: { sm: `${drawerWidth}px` }
           }}
@@ -48,7 +64,9 @@ function App() {
               id="standard-basic"
               label="Expression"
               variant="standard"
+              onChange={handleNewExpression}
             />
+            <Button onClick={handlelExpression}>Solve</Button>
           </Toolbar>
         </AppBar>
 
@@ -88,10 +106,10 @@ function App() {
 
           <Grid container>
             <Grid item xs={6}>
-              <TruthTable variables={variables} expresion={expresion} />
+              <TruthTable variables={variables} expresion={expression} />
             </Grid>
             <Grid item xs={6}>
-              <Kmap variables={variables} expresion={expresion} />
+              <Kmap variables={variables} expresion={expression} />
             </Grid>
           </Grid>
           <SOP variables={variables} />
@@ -104,7 +122,3 @@ function App() {
 }
 
 export default App
-/**
- * make group in kmap done
- * make circuit base on expresion 
- */

@@ -69,11 +69,14 @@ export default function Kmap(props) {
   }
 
   useEffect(() => {
-    getKMapValue(rowElementBitSize, tableSize)
-    getKmapPositionalArray(tableSize)
-  }, [])
+      getKmapPositionalArray(tableSize)
+    },[variables])
 
-  console.log('positionalArray', positionalArray)
+  useEffect(() => {
+      getKMapValue(rowElementBitSize, tableSize)
+    },[expression])
+    
+  // console.log('positionalArray', positionalArray)
 
   useEffect(
     () => {
