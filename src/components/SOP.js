@@ -21,7 +21,7 @@ const DiagramComponent = props => {
     },
     [kMap]
   )
-
+  console.log('expression', exp)
   useEffect(
     () => {
       createCircuit()
@@ -39,7 +39,7 @@ const DiagramComponent = props => {
       width: 1000,
       height: 1500,
       background: {
-        color: 'rgba(0, 255, 0, 0.3)'
+        color: 'rgba(255, 255, 255, 0.3)'
       }
     })
     const parts = exp.split(' + ')

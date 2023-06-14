@@ -8,8 +8,10 @@ import { addKMap } from '../../actions'
 import {
   decimalToBinary,
   binaryToGray,
-  threeVariables
+  getKmapPositionalArray
 } from '../../services/common'
+
+import { threeVariables, fourVariables } from '../../services/mapping'
 
 /**Material UI components */
 import { styled } from '@mui/material/styles'
@@ -25,66 +27,70 @@ export default function Kmap(props) {
   const dispatch = useDispatch()
   const inputRef = useRef(null)
   const [positionalArray, setPositionalArray] = useState([])
-  const [kMapValue, setKMapValue] = useState([])
+  // const [kMapValue, setKMapValue] = useState([])
 
   const classes = useStyles()
   let variables = props.variables
-  let expression = props.expresion
+  let expression = props.expression
   let variableCount = variables.length
-
   let rowElement = variables.slice(0, Math.floor(variables.length / 2))
   let colElement = variables.slice(Math.floor(variables.length / 2))
-
   let rowElementBitSize = Math.pow(2, rowElement.length)
   let colElementBitSize = Math.pow(2, colElement.length)
-
   const tableSize = Math.pow(2, variableCount)
 
-  // get kmap positional array
-  function getKmapPositionalArray(tableSize) {
-    let temp = []
-    for (let i = 0; i < tableSize; i++) {
-      let graycode = binaryToGray(decimalToBinary(i, variableCount))
-      temp.push(graycode)
-    }
-    setPositionalArray(temp)
+  const rowBits = []
+  const colBits = []
+
+  /** Set row can col bits  */
+  for (let i = 0; i < rowElementBitSize; i++)
+    rowBits.push(binaryToGray(decimalToBinary(i, rowElement.length)))
+
+  for (let i = 0; i < colElementBitSize; i++)
+    colBits.push(binaryToGray(decimalToBinary(i, colElement.length)))
+
+  let kMapValue = []
+  let kmapIndex = 0
+  switch (variableCount) {
+    case 3:
+      expression.forEach(item => {
+        const key = threeVariables[item]
+        if (!kMapValue[key[0]]) kMapValue[key[0]] = []
+        kMapValue[key[0]][key[1]] = 1
+      })
+      break
+    case 4:
+      expression.forEach(item => {
+        const key = fourVariables[item]
+        if (!kMapValue[key[0]]) kMapValue[key[0]] = []
+        kMapValue[key[0]][key[1]] = 1
+      })
+      break
+    default:
+      break
   }
 
-  function getKMapValue(rowElementBitSize, tableSize) {
-    let newKMap = []
-    let kmapIndex = 0
-
-    expression.forEach(item => {
-      const key = threeVariables[item]
-      if (!newKMap[key[0]]) newKMap[key[0]] = []
-      newKMap[key[0]][key[1]] = 1
-    })
-
-    for (let j = 0; j < rowElementBitSize; j++)
-      for (let i = 0; i < colElementBitSize; i++)
-        if (newKMap[j][i] !== 1) newKMap[j][i] = 0
-
-    setKMapValue(newKMap)
-    return newKMap
+  for (let j = 0; j < rowElementBitSize; j++) {
+    if (!kMapValue[j]) kMapValue[j] = []
+    for (let i = 0; i < colElementBitSize; i++)
+      if (kMapValue[j][i] !== 1) kMapValue[j][i] = 0
   }
-
-  useEffect(() => {
-      getKmapPositionalArray(tableSize)
-    },[variables])
-
-  useEffect(() => {
-      getKMapValue(rowElementBitSize, tableSize)
-    },[expression])
-    
-  // console.log('positionalArray', positionalArray)
+  useEffect(
+    () => {
+      // setKMapValue(getKMapValue(rowElementBitSize, tableSize))
+      // get kmap positional array
+      if (rowBits.length > 0 && colBits.length > 0)
+        setPositionalArray(getKmapPositionalArray(rowBits, colBits))
+    },
+    [variables]
+  )
 
   useEffect(
     () => {
       dispatch(addKMap({ kMapValue, rowElement, colElement }))
     },
-    [kMapValue]
+    [expression]
   )
-
   return kMapValue.length < 1
     ? <h6> Kmap Table</h6>
     : <table border="1" className={classes.table}>
@@ -98,21 +104,23 @@ export default function Kmap(props) {
           <tr>
             <th />
             <th />
-            <th>00</th>
-            <th>01</th>
-            <th>11</th>
-            <th>10</th>
+            {colBits.map(bit =>
+              <th key={bit}>
+                {bit}
+              </th>
+            )}
           </tr>
         </thead>
         <tbody>
-          {colElement.map((key, index) => {
+          {rowBits.map((key, index) => {
             return (
               <tr key={index}>
-                <td className={classes.td}>
-                  {rowElement[index]}
-                </td>
+                {index === 0 &&
+                  <th className={classes.td} rowSpan={rowElementBitSize}>
+                    {rowElement}
+                  </th>}
                 <th className={classes.td}>
-                  {index}
+                  {key}
                 </th>
 
                 {kMapValue[index].map((value, subIndex) => {

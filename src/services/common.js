@@ -47,15 +47,12 @@ export const createWire = (source, target) => {
   return wire
 }
 
-/** Mapping from function to kmap */
-export const threeVariables = {
-  0: [0, 0],
-  1: [0, 1],
-  2: [0, 3],
-  3: [0, 2],
-  4: [1, 0],
-  5: [1, 1],
-  6: [1, 3],
-  7: [1, 2]
+export function getKmapPositionalArray(row, col) {
+    let posArray = []
+    for(let i = 0 ; i < row.length; i++ ) {
+        for(let j = 0 ; j < col.length ; j++) {
+            posArray.push(`${row[i]}${col[j]}`)
+        }
+    }
+  return posArray;
 }
-

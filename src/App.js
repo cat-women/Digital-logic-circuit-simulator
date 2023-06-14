@@ -2,29 +2,23 @@ import React, { useState } from 'react'
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import CssBaseline from '@mui/material/CssBaseline'
-import IconButton from '@mui/material/IconButton'
-import MenuIcon from '@mui/icons-material/Menu'
 import Toolbar from '@mui/material/Toolbar'
-import Typography from '@mui/material/Typography'
-import TextField from '@mui/material/TextField'
 import Grid from '@mui/material/Grid'
-import Button from '@mui/material/Button'
 import './App.css'
 
 /** Components imports */
 import TruthTable from './components/truthTable'
 import Kmap from './components/Kmap'
 import SideNavbar from './components/sideNavbar/SideNavbar.js'
-import Home from './components/home/Home.js'
 import SOP from './components/SOP.js'
-
+import Form from './components/Form.js'
 import useStyles from './styles'
 
 function App() {
   const [mobileOpen, setMobileOpen] = useState(false)
-  const [variables, setvariables] = useState(['A', 'B', 'C'])
+  const [variables, setvariables] = useState(['A', 'B', 'C', 'D'])
   const [expression, setExpression] = useState([1, 3, 7, 5])
-  const [input, setInput] = useState([])
+  const [inputValue, setInputValue] = useState('')
   const classes = useStyles()
 
   const drawerWidth = 240
@@ -32,20 +26,14 @@ function App() {
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen)
   }
-  const handleNewExpression = e => {
-    const value = e.target.value
-    const newExpression = []
-    for (let i = 0; i < value.length; i++) {
-      const temp = value[i]
-      if (temp === `,`) continue
-      if (temp > 64 || temp < 0) alert('Enter valid number ')
-      newExpression.push(temp)
-    }
-    setInput(newExpression)
+  const handlelExpression = newExp => {
+    setExpression(newExp)
   }
-  const handlelExpression = () => {
-    setExpression(input)
+
+  const handleVariable = newVariable => {
+    setvariables(newVariable)
   }
+
   return (
     <div className="App">
       <Box sx={{ display: 'flex' }}>
@@ -60,13 +48,7 @@ function App() {
           }}
         >
           <Toolbar>
-            <TextField
-              id="standard-basic"
-              label="Expression"
-              variant="standard"
-              onChange={handleNewExpression}
-            />
-            <Button onClick={handlelExpression}>Solve</Button>
+            <Form handlelExpression={handlelExpression} />
           </Toolbar>
         </AppBar>
 
@@ -92,6 +74,7 @@ function App() {
                 width: drawerWidth
               }
             }}
+            handleVariable={handleVariable}
           />
         </Box>
         <Box
@@ -103,13 +86,12 @@ function App() {
           }}
         >
           <Toolbar />
-
           <Grid container>
             <Grid item xs={6}>
-              <TruthTable variables={variables} expresion={expression} />
+              <TruthTable variables={variables} expression={expression} />
             </Grid>
             <Grid item xs={6}>
-              <Kmap variables={variables} expresion={expression} />
+              <Kmap variables={variables} expression={expression} />
             </Grid>
           </Grid>
           <SOP variables={variables} />

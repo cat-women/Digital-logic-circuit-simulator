@@ -41,25 +41,6 @@ function createBooleanFunction(
 
   let rowVar = rowElement
   let colVar = colElement
-  /**
-  islands.forEach(island => {
-
-    // for (let i = 0; i < rowSequence.length; i++) {
-    //   if (rowSequence[i][1] === rowSequence[i + 1][1]) {
-    //     return output += colElement[0]
-    //   }
-    //   if (rowSequence[i+1][1] === rowSequence[i+1][2]) {
-    //     return output += colElement[1]
-    //   }
-
-    // }
-  })
-  if (output.substring(output.length - 3) === ' + ')
-    output = output.substring(0, output.length - 3)
-  if (output === '') output = '1'
-  return output
-   */
-
   islands.forEach(island => {
     let rowSequence = sequence.slice(island.start.y, island.end.y + 1)
 
@@ -133,8 +114,6 @@ function removeRedundantIslands(islands, row, col, kMap) {
 }
 
 export function getIslands(data, variables = ['A', 'B', 'C', 'D']) {
-  // let kMap = [[1, 1, 1, 0], [1, 1, 1, 0], [1, 1, 0, 0], [0, 0, 1, 1]]
-  // if (data.length > 0) kMap = data
   let kMap = data.kMapValue
   const colElement = data.colElement
   const rowElement = data.rowElement
@@ -152,6 +131,8 @@ export function getIslands(data, variables = ['A', 'B', 'C', 'D']) {
   }
 
   let islands = []
+
+  // For Whole Matrix Grouping
   for (let j = 0; j < row; j++) {
     for (let i = 0; i < col; i++) {
       if (!isSafe(i, j, kMap)) continue

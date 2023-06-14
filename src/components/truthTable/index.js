@@ -6,10 +6,10 @@ export default function TruthTable(props) {
   const classes = useStyles()
 
   const truthTable = []
-  const variables = props.variables
+  const variables = ['A', 'B', 'C'] //[('A', 'B', 'C', 'D', 'E', 'F')]
   const variableCount = variables ? variables.length : 4
 
-  let expresion = [2, 3, 5]
+  let expresion = props.expression
   let fValue = []
 
   const tableSize = Math.pow(2, variableCount)
