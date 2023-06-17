@@ -7,7 +7,7 @@ import Grid from '@mui/material/Grid'
 import './App.css'
 
 /** Components imports */
-import TruthTable from './components/truthTable'
+// import TruthTable from './components/truthTable'
 import Kmap from './components/Kmap'
 import SideNavbar from './components/sideNavbar/SideNavbar.js'
 import SOP from './components/SOP.js'
@@ -17,7 +17,20 @@ import useStyles from './styles'
 function App() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [variables, setvariables] = useState(['A', 'B', 'C', 'D'])
-  const [expression, setExpression] = useState([1, 3, 7, 5])
+  const [expression, setExpression] = useState([
+    0,
+    2,
+    4,
+    6,
+    8,
+    10,
+    12,
+    14,
+    1,
+    3,
+    13,
+    15
+  ])
   const [inputValue, setInputValue] = useState('')
   const classes = useStyles()
 
@@ -88,7 +101,7 @@ function App() {
           <Toolbar />
           <Grid container>
             <Grid item xs={6}>
-              <TruthTable variables={variables} expression={expression} />
+              {/* <TruthTable variables={variables} expression={expression} /> */}
             </Grid>
             <Grid item xs={6}>
               <Kmap variables={variables} expression={expression} />

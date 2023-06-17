@@ -1,10 +1,11 @@
 import { decimalToBinary, binaryToGray, isSafe, isRightSafe } from './common.js'
 
-function makeIslandObject(x1, y1, x2, y2) {
+function makeIslandObject(x1, y1, x2, y2, area, corner) {
   return {
     start: { x: x1, y: y1 },
     end: { x: x2, y: y2 },
-    area: (x2 - x1 + 1) * (y2 - y1 + 1)
+    area: area ? area : (x2 - x1 + 1) * (y2 - y1 + 1),
+    corner: corner ? corner : false
   }
 }
 
@@ -36,6 +37,7 @@ function createBooleanFunction(
 
   islands = removeRedundantIslands(islands, row, col, kMap)
 
+  console.log('after removing redundant', islands)
   let rowVarCount = rowElement.length
   let colVarCount = colElement.length
 
@@ -44,6 +46,18 @@ function createBooleanFunction(
   islands.forEach(island => {
     let rowSequence = sequence.slice(island.start.y, island.end.y + 1)
 
+    /**If this is corner row  */
+    if (island.corner) {
+      let end = '',
+        one = 0
+
+      kMap.forEach((row, index) => {
+        if (row[0] === 0) return
+        end = rowSequence[index]
+        one++
+      })
+      if (one !== 4) rowSequence = [rowSequence[0], end]
+    }
     for (let v = 0; v < rowVarCount; v++) {
       let currVarVal = rowSequence[0][rowSequence[0].length - rowVarCount + v]
 
@@ -58,6 +72,22 @@ function createBooleanFunction(
     }
 
     let colSequence = sequence.slice(island.start.x, island.end.x + 1)
+
+    /**If this is corner col  */
+    console.log('col sequence ', colSequence)
+
+    if (island.corner) {
+      let end = '',
+        one = 0
+      let colBits = kMap[0]
+
+      colBits.forEach((col, index) => {
+        if (col === 0) return
+        end = colSequence[index]
+        one++
+      })
+      if (one !== 4) colSequence = [colSequence[0], end]
+    }
 
     const toRemove = colSequence[0].substring(0, rowVarCount)
 
@@ -163,6 +193,74 @@ export function getIslands(data, variables = ['A', 'B', 'C', 'D']) {
       }
     }
   }
+  let islands2 = []
+  // For Row  Corner Grouping
+  for (let j = 0; j < row; j += 4) {
+    for (let i = col - 1; i >= 0; i--) {
+      /**w = width of island , h = height of island  */
+
+      let w = 1,
+        h = 3
+      let area = 2
+      if (!isSafe(i, j, kMap) || !isSafe(i, j + h, kMap)) break
+      islands2.push(makeIslandObject(i, j, i, j + h, area, true))
+      while (true) {
+        if (!isSafe(i - w, j, kMap) || !isSafe(i - w, j + h, kMap)) break
+
+        if (Math.log2(w + 1) % 1 !== 0) {
+          // if (!isSafe(i - w, j, kMap) || !isSafe(i - w, j + h, kMap)) break
+
+          if (!isSafe(i - w - 1, j, kMap) || !isSafe(i - w - 1, j + h, kMap))
+            break
+          area += 4
+
+          islands2.push(makeIslandObject(i, j, i - w - 1, j + h, area, true))
+          break
+        } else {
+          area += 2
+          islands2.push(makeIslandObject(i, j, i - w, j + h, area, true))
+        }
+        w++
+      }
+    }
+  }
+  console.log('row grouping', islands2)
+
+  /* For column  Corner Grouping */
+  for (let i = 0; i < col; i += 4) {
+    for (let j = row - 1; j >= 0; j--) {
+      /**w = width of island , h = height of island  */
+      let w = 3,
+        h = 1
+      let area = 2
+
+      if (!isSafe(i, j, kMap) || !isSafe(i + w, j, kMap)) break
+      islands2.push(makeIslandObject(i, j, i + w, j, area, true))
+      while (true) {
+        if (!isSafe(i, j - h, kMap) || !isSafe(i + w, j - h, kMap)) break
+
+        if (Math.log2(h + 1) % 1 !== 0) {
+          if (!isSafe(i, j - h, kMap) || !isSafe(i + w, j - h, kMap)) break
+
+          if (!isSafe(i, j - h - 1, kMap) || !isSafe(i + w, j - h - 1, kMap))
+            break
+          area += 4
+
+          islands2.push(makeIslandObject(i, j, w, j - h - 1, area, true))
+          break
+        } else {
+          area += 2
+          islands2.push(makeIslandObject(i, j, i + w, j - h, area, true))
+        }
+        h++
+      }
+    }
+  }
+  console.log('column grouping', islands2)
+  console.log(
+    'corner grouping removing redundant',
+    removeRedundantIslands(islands2, row, col, kMap)
+  )
 
   if (islands.length === 0) return '0'
   islands.sort((a, b) => b.area - a.area)

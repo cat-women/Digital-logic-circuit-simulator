@@ -30,6 +30,7 @@ const DiagramComponent = props => {
   )
 
   function createCircuit() {
+    return <h1>Hello</h1>
     if (!exp || exp.length < 1) return
 
     const graph = new dia.Graph()
