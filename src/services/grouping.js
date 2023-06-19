@@ -21,8 +21,27 @@ function createBooleanFunction(
   let output = ''
   let visited = new Array(row)
   for (let i = 0; i < row; i++) visited[i] = new Array(col).fill(false)
-
+  /** has original function  */
+  /*
   islands = islands.filter(island => {
+    let flag = false
+    for (let j = island.start.y; j <= island.end.y; j++) {
+      for (let i = island.start.x; i <= island.end.x; i++) {
+        if (visited[j][i] === false) {
+          visited[j][i] = true
+          flag = true
+        }
+      }
+    }
+
+    return flag
+  })
+*/
+  islands = islands.filter(island => {
+    if (island.corner === 'row' || islands.corner === 'col') {
+      return true // Preserve islands with corner value = false
+    }
+
     let flag = false
     for (let j = island.start.y; j <= island.end.y; j++) {
       for (let i = island.start.x; i <= island.end.x; i++) {
@@ -38,7 +57,6 @@ function createBooleanFunction(
 
   // islands = removeRedundantIslands(islands, row, col, kMap)
 
-  console.log('after removing redundant', islands)
   let rowVarCount = rowElement.length
   let colVarCount = colElement.length
 
@@ -58,7 +76,6 @@ function createBooleanFunction(
       })
       if (one === 4) rowSequence = [rowSequence[0], end]
     }
-    console.log('row Sequence ===', rowSequence)
 
     for (let v = 0; v < rowVarCount; v++) {
       let currVarVal = rowSequence[0][rowSequence[0].length - rowVarCount + v]
@@ -76,7 +93,6 @@ function createBooleanFunction(
     let colSequence = sequence.slice(island.start.x, island.end.x + 1)
 
     /**If this is corner col  */
-    console.log('col sequence ', colSequence)
 
     if (island.corner === 'col') {
       let end = '',
@@ -272,13 +288,12 @@ export function getIslands(data, variables = ['A', 'B', 'C', 'D']) {
   colIslands = removeRedundantIslands(colIslands, row, col, kMap)
 
   islands = [
-    ...islands,
     ...(rowIslands.length ? rowIslands : []),
-    ...(colIslands.length ? colIslands : [])
+    ...(colIslands.length ? colIslands : []),
+    ...islands
   ]
 
-  console.log('final output', islands)
-  let rowFunction = createBooleanFunction(
+  let result = createBooleanFunction(
     islands,
     row,
     col,
@@ -287,28 +302,5 @@ export function getIslands(data, variables = ['A', 'B', 'C', 'D']) {
     sequence,
     kMap
   )
-
-  // let colFunction = createBooleanFunction(
-  //   rowIslands,
-  //   row,
-  //   col,
-  //   rowElement,
-  //   colElement,
-  //   sequence,
-  //   kMap
-  // )
-
-  console.log('log and col function ', rowFunction)
-
-  // return createBooleanFunction(
-  //   islands,
-  //   row,
-  //   col,
-  //   rowElement,
-  //   colElement,
-  //   sequence,
-  //   kMap
-  // )
-
-  return rowFunction
+  return result
 }

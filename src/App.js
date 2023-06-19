@@ -17,7 +17,7 @@ import useStyles from './styles'
 function App() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [variables, setvariables] = useState(['A', 'B', 'C', 'D'])
-  const [expression, setExpression] = useState([0, 2, 4, 6])
+  const [expression, setExpression] = useState([0,1,2,3,4,6,8,10,12,13,14,15])
   const [inputValue, setInputValue] = useState('')
   const classes = useStyles()
 
