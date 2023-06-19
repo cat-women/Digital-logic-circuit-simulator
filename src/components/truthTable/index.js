@@ -6,7 +6,7 @@ export default function TruthTable(props) {
   const classes = useStyles()
 
   const truthTable = []
-  const variables = ['A', 'B', 'C'] //[('A', 'B', 'C', 'D', 'E', 'F')]
+  const variables = props.variables //[('A', 'B', 'C', 'D', 'E', 'F')]
   const variableCount = variables ? variables.length : 4
 
   let expresion = props.expression

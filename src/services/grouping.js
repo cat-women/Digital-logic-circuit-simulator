@@ -32,10 +32,11 @@ function createBooleanFunction(
         }
       }
     }
+
     return flag
   })
 
-  islands = removeRedundantIslands(islands, row, col, kMap)
+  // islands = removeRedundantIslands(islands, row, col, kMap)
 
   console.log('after removing redundant', islands)
   let rowVarCount = rowElement.length
@@ -45,9 +46,8 @@ function createBooleanFunction(
   let colVar = colElement
   islands.forEach(island => {
     let rowSequence = sequence.slice(island.start.y, island.end.y + 1)
-
     /**If this is corner row  */
-    if (island.corner) {
+    if (island.corner === 'row') {
       let end = '',
         one = 0
 
@@ -56,8 +56,10 @@ function createBooleanFunction(
         end = rowSequence[index]
         one++
       })
-      if (one !== 4) rowSequence = [rowSequence[0], end]
+      if (one === 4) rowSequence = [rowSequence[0], end]
     }
+    console.log('row Sequence ===', rowSequence)
+
     for (let v = 0; v < rowVarCount; v++) {
       let currVarVal = rowSequence[0][rowSequence[0].length - rowVarCount + v]
 
@@ -76,7 +78,7 @@ function createBooleanFunction(
     /**If this is corner col  */
     console.log('col sequence ', colSequence)
 
-    if (island.corner) {
+    if (island.corner === 'col') {
       let end = '',
         one = 0
       let colBits = kMap[0]
@@ -86,7 +88,7 @@ function createBooleanFunction(
         end = colSequence[index]
         one++
       })
-      if (one !== 4) colSequence = [colSequence[0], end]
+      if (one === 4) colSequence = [colSequence[0], end]
     }
 
     const toRemove = colSequence[0].substring(0, rowVarCount)
@@ -193,79 +195,90 @@ export function getIslands(data, variables = ['A', 'B', 'C', 'D']) {
       }
     }
   }
-  let islands2 = []
+
+  let rowIslands = []
   // For Row  Corner Grouping
   for (let j = 0; j < row; j += 4) {
-    for (let i = col - 1; i >= 0; i--) {
+    for (let i = 0; i < col; i++) {
       /**w = width of island , h = height of island  */
 
       let w = 1,
         h = 3
       let area = 2
       if (!isSafe(i, j, kMap) || !isSafe(i, j + h, kMap)) break
-      islands2.push(makeIslandObject(i, j, i, j + h, area, true))
+      rowIslands.push(makeIslandObject(i, j, i, j + h, area, 'row'))
       while (true) {
-        if (!isSafe(i - w, j, kMap) || !isSafe(i - w, j + h, kMap)) break
+        if (!isSafe(i + w, j, kMap) || !isSafe(i + w, j + h, kMap)) break
 
         if (Math.log2(w + 1) % 1 !== 0) {
-          // if (!isSafe(i - w, j, kMap) || !isSafe(i - w, j + h, kMap)) break
+          if (!isSafe(i + w, j, kMap) || !isSafe(i + w, j + h, kMap)) break
 
-          if (!isSafe(i - w - 1, j, kMap) || !isSafe(i - w - 1, j + h, kMap))
+          if (!isSafe(i + w + 1, j, kMap) || !isSafe(i + w + 1, j + h, kMap))
             break
           area += 4
 
-          islands2.push(makeIslandObject(i, j, i - w - 1, j + h, area, true))
+          rowIslands.push(makeIslandObject(i, j, w + 1, j + h, area, 'row'))
           break
         } else {
           area += 2
-          islands2.push(makeIslandObject(i, j, i - w, j + h, area, true))
+          rowIslands.push(makeIslandObject(i, j, i + w, j + h, area, 'row'))
         }
         w++
       }
     }
   }
-  console.log('row grouping', islands2)
 
+  let colIslands = []
   /* For column  Corner Grouping */
   for (let i = 0; i < col; i += 4) {
-    for (let j = row - 1; j >= 0; j--) {
+    for (let j = 0; j < row; j++) {
       /**w = width of island , h = height of island  */
       let w = 3,
         h = 1
       let area = 2
 
       if (!isSafe(i, j, kMap) || !isSafe(i + w, j, kMap)) break
-      islands2.push(makeIslandObject(i, j, i + w, j, area, true))
+      colIslands.push(makeIslandObject(i, j, i + w, j, area, 'col'))
       while (true) {
-        if (!isSafe(i, j - h, kMap) || !isSafe(i + w, j - h, kMap)) break
+        if (!isSafe(i, j + h, kMap) || !isSafe(i + w, j + h, kMap)) break
 
         if (Math.log2(h + 1) % 1 !== 0) {
-          if (!isSafe(i, j - h, kMap) || !isSafe(i + w, j - h, kMap)) break
+          // if (!isSafe(i, j+h, kMap) || !isSafe(i + w, j + h, kMap)) break
 
-          if (!isSafe(i, j - h - 1, kMap) || !isSafe(i + w, j - h - 1, kMap))
+          if (!isSafe(i, j + h + 1, kMap) || !isSafe(i + w, j + h + 1, kMap))
             break
           area += 4
 
-          islands2.push(makeIslandObject(i, j, w, j - h - 1, area, true))
+          colIslands.push(makeIslandObject(i, j, w, j + h + 1, area, 'col'))
           break
         } else {
           area += 2
-          islands2.push(makeIslandObject(i, j, i + w, j - h, area, true))
+          colIslands.push(makeIslandObject(i, j, i + w, j + h, area, 'col'))
         }
         h++
       }
     }
   }
-  console.log('column grouping', islands2)
-  console.log(
-    'corner grouping removing redundant',
-    removeRedundantIslands(islands2, row, col, kMap)
-  )
 
   if (islands.length === 0) return '0'
   islands.sort((a, b) => b.area - a.area)
 
-  return createBooleanFunction(
+  rowIslands = islands.concat(rowIslands)
+  colIslands = islands.concat(colIslands)
+  rowIslands.sort((a, b) => b.area - a.area)
+  colIslands.sort((a, b) => b.area - a.area)
+
+  rowIslands = removeRedundantIslands(rowIslands, row, col, kMap)
+  colIslands = removeRedundantIslands(colIslands, row, col, kMap)
+
+  islands = [
+    ...islands,
+    ...(rowIslands.length ? rowIslands : []),
+    ...(colIslands.length ? colIslands : [])
+  ]
+
+  console.log('final output', islands)
+  let rowFunction = createBooleanFunction(
     islands,
     row,
     col,
@@ -274,4 +287,28 @@ export function getIslands(data, variables = ['A', 'B', 'C', 'D']) {
     sequence,
     kMap
   )
+
+  // let colFunction = createBooleanFunction(
+  //   rowIslands,
+  //   row,
+  //   col,
+  //   rowElement,
+  //   colElement,
+  //   sequence,
+  //   kMap
+  // )
+
+  console.log('log and col function ', rowFunction)
+
+  // return createBooleanFunction(
+  //   islands,
+  //   row,
+  //   col,
+  //   rowElement,
+  //   colElement,
+  //   sequence,
+  //   kMap
+  // )
+
+  return rowFunction
 }
