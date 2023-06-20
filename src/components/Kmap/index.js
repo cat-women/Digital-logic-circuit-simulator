@@ -125,7 +125,13 @@ export default function Kmap(props) {
 
                 {kMapValue[index].map((value, subIndex) => {
                   return (
-                    <td className={classes.td} key={subIndex}>
+                    <td
+                      className={`${classes.td} ${kMapValue[index][subIndex] ===
+                      0
+                        ? classes.tdGray
+                        : classes.tdGreen}`}
+                      key={subIndex}
+                    >
                       {kMapValue[index][subIndex]}
                     </td>
                   )

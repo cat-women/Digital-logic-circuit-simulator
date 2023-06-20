@@ -1,27 +1,29 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { dia, shapes } from 'jointjs'
-import { useSelector } from 'react-redux'
+import { dia } from 'jointjs'
+import { useSelector, useDispatch } from 'react-redux'
 
 import createGates from './Gates'
 import { getIslands } from '../services/grouping'
 import { createWire } from '../services/common'
+import { addFunctionalExp } from '../actions'
 
 const DiagramComponent = props => {
   const diagramRef = useRef(null)
   const { kMap, setkMap } = useSelector(state => state)
-  const [exp, setExp] = useState([])
+  const [exp, setExp] = useState('')
   const variables = props.variables ? props.variables : ['A', 'B', 'C', 'D']
+  const dispatch = useDispatch()
 
   useEffect(
     () => {
       if (!kMap.isNull) {
         const expression = getIslands(kMap.data, variables)
         setExp(expression === '1' ? `A+B` : expression)
+        dispatch(addFunctionalExp(exp))
       }
     },
     [kMap]
   )
-  console.log('expression', exp)
   useEffect(
     () => {
       createCircuit()
@@ -33,7 +35,7 @@ const DiagramComponent = props => {
     if (!exp || exp.length < 1) return
 
     const graph = new dia.Graph()
-    const paper = new dia.Paper({
+    new dia.Paper({
       el: diagramRef.current,
       model: graph,
       width: 1000,
@@ -52,7 +54,6 @@ const DiagramComponent = props => {
       let gate = null
       let wire = null
       let elements = []
-      let andGate = null
       for (let i = 0; i < part.length; i++) {
         const el = part[i]
         if (variables.includes(el)) {

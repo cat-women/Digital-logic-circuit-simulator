@@ -17,3 +17,13 @@ export const deleteKMap = createAsyncThunk('kMap', (id, thunkAPI) => {
     return thunkAPI.rejectWithValue(error.message)
   }
 })
+
+export const addFunctionalExp = createAsyncThunk('funcExp', async (exp, thunkAPI) => {
+  try {
+    return exp;
+  } catch (error) {
+    console.log('Functional exp error:', error);
+    return thunkAPI.rejectWithValue(error.message);
+  }
+});
+

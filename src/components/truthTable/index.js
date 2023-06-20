@@ -36,18 +36,18 @@ export default function TruthTable(props) {
         <tbody>
           {truthTable.map((decimalNumber, index) => {
             const binary = decimalToBinary(decimalNumber, variableCount)
-            return (
-              <tr key={decimalNumber}>
-                {binary.split('').map((bit, index) =>
-                  <td key={index} className={classes.td}>
-                    {bit}
-                  </td>
-                )}
-                <td key={index} className={classes.td}>
+            return <tr key={decimalNumber}>
+                {binary
+                  .split('')
+                  .map((bit, index) =>
+                    <td key={index} className={classes.td}>
+                      {bit}
+                    </td>
+                  )}
+                <td key={index} td className={`${classes.td} ${fValue[index] === 0 ? classes.tdGray : classes.tdGreen}`}>
                   {fValue[index]}
                 </td>
               </tr>
-            )
           })}
         </tbody>
       </table>
