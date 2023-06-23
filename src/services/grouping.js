@@ -39,7 +39,7 @@ function createBooleanFunction(
 */
   islands = islands.filter(island => {
     if (island.corner === 'row' || islands.corner === 'col') {
-      return true // Preserve islands with corner value = false
+      return true
     }
 
     let flag = false
@@ -62,8 +62,10 @@ function createBooleanFunction(
 
   let rowVar = rowElement
   let colVar = colElement
+
   islands.forEach(island => {
     let rowSequence = sequence.slice(island.start.y, island.end.y + 1)
+
     /**If this is corner row  */
     if (island.corner === 'row') {
       let end = '',
@@ -92,19 +94,17 @@ function createBooleanFunction(
 
     let colSequence = sequence.slice(island.start.x, island.end.x + 1)
 
-    /**If this is corner col  */
-
     if (island.corner === 'col') {
-      let end = '',
-        one = 0
-      let colBits = kMap[0]
+      // let end = '',
+      //   one = 0
+      // let colBits = kMap[0]
+      // colBits.forEach((col, index) => {
+      //   if (col === 0) return
+      //   end = colSequence[index]
+      //   one++
+      // })
 
-      colBits.forEach((col, index) => {
-        if (col === 0) return
-        end = colSequence[index]
-        one++
-      })
-      if (one === 4) colSequence = [colSequence[0], end]
+      colSequence = [colSequence[0], colSequence[colSequence.length - 1]]
     }
 
     const toRemove = colSequence[0].substring(0, rowVarCount)
@@ -124,7 +124,6 @@ function createBooleanFunction(
     }
     output += ' + '
   })
-
   if (output.substring(output.length - 3) === ' + ')
     output = output.substring(0, output.length - 3)
   if (output === '') output = '1'
@@ -276,9 +275,6 @@ export function getIslands(data, variables = ['A', 'B', 'C', 'D']) {
     }
   }
 
-  if (islands.length === 0) return '0'
-  islands.sort((a, b) => b.area - a.area)
-
   rowIslands = islands.concat(rowIslands)
   colIslands = islands.concat(colIslands)
   rowIslands.sort((a, b) => b.area - a.area)
@@ -293,6 +289,8 @@ export function getIslands(data, variables = ['A', 'B', 'C', 'D']) {
     ...islands
   ]
 
+  if (islands.length === 0) return '0'
+  islands.sort((a, b) => b.area - a.area)
   let result = createBooleanFunction(
     islands,
     row,

@@ -1,4 +1,4 @@
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from '@material-ui/core/styles'
 
 const useStyles = makeStyles(theme => ({
   table: {
@@ -15,7 +15,11 @@ const useStyles = makeStyles(theme => ({
   },
   tdGreen: {
     backgroundColor: 'green'
+  },
+  button: {
+    border: 'none',
+    padding: 0,
   }
 }))
 
-export default useStyles;
+export default useStyles

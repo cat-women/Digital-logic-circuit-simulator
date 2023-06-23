@@ -1,10 +1,10 @@
-import React, {  useState } from 'react'
+import React, { useState } from 'react'
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import CssBaseline from '@mui/material/CssBaseline'
 import Toolbar from '@mui/material/Toolbar'
 import TextField from '@mui/material/TextField'
-
+import InputLabel from '@mui/material/InputLabel'
 import { useSelector } from 'react-redux'
 import Grid from '@mui/material/Grid'
 import './App.css'
@@ -19,21 +19,8 @@ import useStyles from './styles'
 
 function App() {
   const [mobileOpen, setMobileOpen] = useState(false)
-  const [variables, setvariables] = useState(['A', 'B', 'C', 'D'])
-  const [expression, setExpression] = useState([
-    0,
-    1,
-    2,
-    3,
-    4,
-    6,
-    8,
-    10,
-    12,
-    13,
-    14,
-    15
-  ])
+  const [variables, setvariables] = useState(['A', 'B', 'C'])
+  const [expression, setExpression] = useState([0, 2, 5, 6])
   const classes = useStyles()
   const drawerWidth = 240
   const functionalExp = useSelector(state => state.funcExp)
@@ -65,15 +52,12 @@ function App() {
           }}
         >
           <Toolbar>
-            <Form handleExpression={handleExpression} variables ={variables}/>
-            <TextField
-            sx ={{ marginLeft :"129px"}}
-              id="outlined-basic"
-              value={`Expression: ${functionalExp.exp}`}
-              variant="outlined"
-              disabled ={ true}
-              InputProps={{ readOnly: true }}
-            />
+            <Form handleExpression={handleExpression} variables={variables} />
+            <InputLabel sx={{ marginLeft: '129px' }}>Expression :</InputLabel>
+
+            <InputLabel sx={{ marginLeft: '129px', color : 'red'}}>
+              {functionalExp.exp}{' '}
+            </InputLabel>
           </Toolbar>
         </AppBar>
 

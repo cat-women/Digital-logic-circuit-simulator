@@ -75,6 +75,11 @@ export default function Kmap(props) {
     for (let i = 0; i < colElementBitSize; i++)
       if (kMapValue[j][i] !== 1) kMapValue[j][i] = 0
   }
+  const handleClick = (i, j) => {
+    console.log('click', i, j, kMapValue[i][j])
+    kMapValue[i][j] = (kMapValue[i][j] = 1) ? 0 : 1
+    console.log(kMapValue[i][j])
+  }
   useEffect(
     () => {
       // setKMapValue(getKMapValue(rowElementBitSize, tableSize))
@@ -132,7 +137,17 @@ export default function Kmap(props) {
                         : classes.tdGreen}`}
                       key={subIndex}
                     >
-                      {kMapValue[index][subIndex]}
+                      <button
+                        className={`${classes.button} ${kMapValue[index][
+                          subIndex
+                        ] === 0
+                          ? classes.tdGray
+                          : classes.tdGreen}`}
+                        key={subIndex}
+                        onClick={() => handleClick(index, subIndex)}
+                      >
+                        {kMapValue[index][subIndex]}
+                      </button>
                     </td>
                   )
                 })}

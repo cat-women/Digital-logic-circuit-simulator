@@ -9,7 +9,7 @@ export default function TruthTable(props) {
   const variables = props.variables //[('A', 'B', 'C', 'D', 'E', 'F')]
   const variableCount = variables ? variables.length : 4
 
-  let expresion = props.expression
+  let expresion = props.expression.map(item => Number(item))
   let fValue = []
 
   const tableSize = Math.pow(2, variableCount)
@@ -36,18 +36,24 @@ export default function TruthTable(props) {
         <tbody>
           {truthTable.map((decimalNumber, index) => {
             const binary = decimalToBinary(decimalNumber, variableCount)
-            return <tr key={decimalNumber}>
-                {binary
-                  .split('')
-                  .map((bit, index) =>
-                    <td key={index} className={classes.td}>
-                      {bit}
-                    </td>
-                  )}
-                <td key={index} td className={`${classes.td} ${fValue[index] === 0 ? classes.tdGray : classes.tdGreen}`}>
+            return (
+              <tr key={decimalNumber}>
+                {binary.split('').map((bit, index) =>
+                  <td key={index} className={classes.td}>
+                    {bit}
+                  </td>
+                )}
+                <td
+                  key={index}
+                  td
+                  className={`${classes.td} ${fValue[index] === 0
+                    ? classes.tdGray
+                    : classes.tdGreen}`}
+                >
                   {fValue[index]}
                 </td>
               </tr>
+            )
           })}
         </tbody>
       </table>
