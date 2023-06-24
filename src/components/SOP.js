@@ -18,7 +18,7 @@ const DiagramComponent = props => {
     () => {
       if (!kMap.isNull) {
         const expression = getIslands(kMap.data, variables)
-        setExp(expression === '1' ? `A+B` : expression)
+        setExp(expression)
         dispatch(addFunctionalExp(exp))
       }
     },
@@ -32,8 +32,6 @@ const DiagramComponent = props => {
   )
 
   function createCircuit() {
-    if (!exp || exp.length < 1) return
-
     const graph = new dia.Graph()
     new dia.Paper({
       el: diagramRef.current,
@@ -116,6 +114,7 @@ const DiagramComponent = props => {
 
     graph.addCell(finalWire)
   }
+if (exp === '1') return <h6>Diagram will be shown here</h6>
 
   return <div ref={diagramRef} />
 }

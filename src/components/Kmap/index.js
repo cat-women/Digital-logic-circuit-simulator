@@ -11,7 +11,11 @@ import {
   getKmapPositionalArray
 } from '../../services/common'
 
-import { threeVariables, fourVariables } from '../../services/mapping'
+import {
+  twoVariables,
+  threeVariables,
+  fourVariables
+} from '../../services/mapping'
 
 /**Material UI components */
 import { styled } from '@mui/material/styles'
@@ -52,6 +56,13 @@ export default function Kmap(props) {
   let kMapValue = []
   let kmapIndex = 0
   switch (variableCount) {
+    case 2:
+      expression.forEach(item => {
+        const key = twoVariables[item]
+        if (!kMapValue[key[0]]) kMapValue[key[0]] = []
+        kMapValue[key[0]][key[1]] = 1
+      })
+      break
     case 3:
       expression.forEach(item => {
         const key = threeVariables[item]
@@ -78,7 +89,6 @@ export default function Kmap(props) {
   const handleClick = (i, j) => {
     console.log('click', i, j, kMapValue[i][j])
     kMapValue[i][j] = (kMapValue[i][j] = 1) ? 0 : 1
-    console.log(kMapValue[i][j])
   }
   useEffect(
     () => {

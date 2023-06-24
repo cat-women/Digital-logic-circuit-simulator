@@ -1,11 +1,16 @@
 /** Mapping between number of variable and functional expression */
 // export const validFunctionalExpression = {
-//   2 : 
+//   2 :
 // }
 
-
-
 /** Mapping from function to kmap */
+
+export const twoVariables = {
+  0: [0, 0],
+  1: [0, 1],
+  2: [1, 0],
+  3: [1, 1]
+}
 export const threeVariables = {
   0: [0, 0],
   1: [0, 1],
