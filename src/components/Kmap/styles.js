@@ -18,7 +18,13 @@ const useStyles = makeStyles(theme => ({
   },
   button: {
     border: 'none',
-    padding: 0,
+    padding: 0
+  },
+  left: {
+    borderLeft: '4px solid #000'
+  },
+  top: {
+    borderTop: '4px solid #000'
   }
 }))
 

@@ -83,6 +83,8 @@ function createBooleanFunction(
       let currVarVal = rowSequence[0][rowSequence[0].length - rowVarCount + v]
 
       for (let i = 0; i < rowSequence.length; i++) {
+        if (rowSequence[i] === undefined)
+          console.log('this is undefined', i, rowSequence, island)
         if (
           rowSequence[i][rowSequence[i].length - rowVarCount + v] !== currVarVal
         )
@@ -95,15 +97,6 @@ function createBooleanFunction(
     let colSequence = sequence.slice(island.start.x, island.end.x + 1)
 
     if (island.corner === 'col') {
-      // let end = '',
-      //   one = 0
-      // let colBits = kMap[0]
-      // colBits.forEach((col, index) => {
-      //   if (col === 0) return
-      //   end = colSequence[index]
-      //   one++
-      // })
-
       colSequence = [colSequence[0], colSequence[colSequence.length - 1]]
     }
 
@@ -166,9 +159,8 @@ export function getIslands(data, variables = ['A', 'B', 'C', 'D']) {
   const rowElement = data.rowElement
   const variableCount = variables.length
 
-  const col = colElement.length > 1 ? Math.pow(data.colElement.length, 2) : 2
-  const row = rowElement.length > 1 ? Math.pow(data.rowElement.length, 2) : 2
-
+  const col = colElement.length > 1 ? Math.pow(2, data.colElement.length) : 2
+  const row = rowElement.length > 1 ? Math.pow(2, data.rowElement.length) : 2
   if (kMap.length < 1) return null
   /** sequence to store kmap varibale combination */
   let sequence = []
@@ -282,7 +274,6 @@ export function getIslands(data, variables = ['A', 'B', 'C', 'D']) {
 
   rowIslands = removeRedundantIslands(rowIslands, row, col, kMap)
   colIslands = removeRedundantIslands(colIslands, row, col, kMap)
-
   islands = [
     ...(rowIslands.length ? rowIslands : []),
     ...(colIslands.length ? colIslands : []),

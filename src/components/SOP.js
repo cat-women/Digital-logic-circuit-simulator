@@ -114,7 +114,7 @@ const DiagramComponent = props => {
 
     graph.addCell(finalWire)
   }
-if (exp === '1') return <h6>Diagram will be shown here</h6>
+  if (exp === '1') return <h6>Diagram will be shown here</h6>
 
   return <div ref={diagramRef} />
 }

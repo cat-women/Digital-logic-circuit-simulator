@@ -2,6 +2,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit'
 
 export const addKMap = createAsyncThunk('kMap', (data, thunkAPI) => {
   try {
+    console.log('in action add kMap', data)
     return data
   } catch (error) {
     console.log('KMap add error', error)
@@ -18,12 +19,14 @@ export const deleteKMap = createAsyncThunk('kMap', (id, thunkAPI) => {
   }
 })
 
-export const addFunctionalExp = createAsyncThunk('funcExp', async (exp, thunkAPI) => {
-  try {
-    return exp;
-  } catch (error) {
-    console.log('Functional exp error:', error);
-    return thunkAPI.rejectWithValue(error.message);
+export const addFunctionalExp = createAsyncThunk(
+  'funcExp',
+  async (exp, thunkAPI) => {
+    try {
+      return exp
+    } catch (error) {
+      console.log('Functional exp error:', error)
+      return thunkAPI.rejectWithValue(error.message)
+    }
   }
-});
-
+)

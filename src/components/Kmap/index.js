@@ -14,7 +14,9 @@ import {
 import {
   twoVariables,
   threeVariables,
-  fourVariables
+  fourVariables,
+  fiveVariables,
+  sixVariables
 } from '../../services/mapping'
 
 /**Material UI components */
@@ -77,6 +79,20 @@ export default function Kmap(props) {
         kMapValue[key[0]][key[1]] = 1
       })
       break
+    case 5:
+      expression.forEach(item => {
+        const key = fiveVariables[item]
+        if (!kMapValue[key[0]]) kMapValue[key[0]] = []
+        kMapValue[key[0]][key[1]] = 1
+      })
+      break
+    case 6:
+      expression.forEach(item => {
+        const key = sixVariables[item]
+        if (!kMapValue[key[0]]) kMapValue[key[0]] = []
+        kMapValue[key[0]][key[1]] = 1
+      })
+      break
     default:
       break
   }
@@ -104,7 +120,7 @@ export default function Kmap(props) {
     () => {
       dispatch(addKMap({ kMapValue, rowElement, colElement }))
     },
-    [expression]
+    [expression, variables]
   )
   return kMapValue.length < 1
     ? <h6> Kmap Table</h6>
@@ -120,7 +136,10 @@ export default function Kmap(props) {
             <th />
             <th />
             {colBits.map(bit =>
-              <th key={bit}>
+              <th
+                key={bit}
+                className={` ${bit === 4 ? classes.doubleDarkBorder : ''}`}
+              >
                 {bit}
               </th>
             )}
@@ -144,7 +163,13 @@ export default function Kmap(props) {
                       className={`${classes.td} ${kMapValue[index][subIndex] ===
                       0
                         ? classes.tdGray
-                        : classes.tdGreen}`}
+                        : classes.tdGreen}
+
+                        ${index === 4 ? classes.top : ''}
+
+                        ${subIndex === 4 ? classes.left : ''}
+  
+                        `}
                       key={subIndex}
                     >
                       <button
