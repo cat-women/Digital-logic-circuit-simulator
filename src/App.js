@@ -26,7 +26,7 @@ function App() {
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen)
   }
-  const handlelExpression = newExp => {
+  const handlleExpression = newExp => {
     setExpression(newExp)
   }
 
@@ -48,7 +48,7 @@ function App() {
           }}
         >
           <Toolbar>
-            <Form handlelExpression={handlelExpression} />
+            <Form handleExpression={handlleExpression} variables={variables} />
           </Toolbar>
         </AppBar>
 

@@ -18,6 +18,7 @@ export default function Form(props) {
     const exp = inputValue.split(/[ ,]+/)
     const newExp = exp.filter((item, index) => exp.indexOf(item) === index)
     let isValid = true
+    
     for (const element of newExp) {
       if (element > Math.pow(2, props.variables.length)) {
         alert('Invalid position for the given variable')
