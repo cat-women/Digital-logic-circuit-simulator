@@ -46,7 +46,7 @@ function createBooleanFunction(
   islands.sort((a, b) => b.area - a.area)
 
   islands = islands.filter(island => {
-     if (
+    if (
       island.corner === 'row' ||
       islands.corner === 'col' ||
       island.corner === 'corner'
@@ -74,7 +74,6 @@ function createBooleanFunction(
     return flag
   })
 
-
   // islands = removeRedundantIslands(islands, row, col, kMap)
 
   let rowVarCount = rowElement.length
@@ -94,8 +93,6 @@ function createBooleanFunction(
       let currVarVal = rowSequence[0][rowSequence[0].length - rowVarCount + v]
 
       for (let i = 0; i < rowSequence.length; i++) {
-        if (rowSequence[i] === undefined)
-          console.log('this is undefined', i, rowSequence, island)
         if (
           rowSequence[i][rowSequence[i].length - rowVarCount + v] !== currVarVal
         )
@@ -128,6 +125,7 @@ function createBooleanFunction(
     }
     output += ' + '
   })
+
   if (output.substring(output.length - 3) === ' + ')
     output = output.substring(0, output.length - 3)
   if (output === '') output = '1'
@@ -276,8 +274,6 @@ function grouping(kMap, row, col) {
     }
   }
 
-  if (islands.length === 0) return '0'
-
   islands.sort((a, b) => b.area - a.area)
 
   rowIslands.sort((a, b) => b.area - a.area)
@@ -290,7 +286,7 @@ function grouping(kMap, row, col) {
   rowIslands = removeRedundant(rowIslands, row, col)
   // same as in row islands
   colIslands = removeRedundantIslands(colIslands, row, col, kMap)
-  colIslands = removeRedundant(colIslands, row, col)  
+  colIslands = removeRedundant(colIslands, row, col)
   islands = removeRedundantIslands(islands, row, col, kMap)
 
   // remove redundant rowislands and colislands
@@ -398,8 +394,6 @@ export function getIslands(data, variables = ['A', 'B', 'C', 'D']) {
       totalIslands.push(grouping(arr, 4, 4))
     })
 
-    console.log('total islands', totalIslands)
-
     let newArray = []
     let x, y
 
@@ -449,8 +443,6 @@ export function getIslands(data, variables = ['A', 'B', 'C', 'D']) {
         }
       })
     })
-
-    console.log('after sorting', newArray)
   }
 
   islands = grouping(kMap, row, col)
@@ -458,7 +450,6 @@ export function getIslands(data, variables = ['A', 'B', 'C', 'D']) {
   if (islands.length === 0) return '0'
   islands.sort((a, b) => b.area - a.area)
 
-  console.log("islands",islands);
   let result = createBooleanFunction(
     islands,
     row,

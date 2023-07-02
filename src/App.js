@@ -3,6 +3,9 @@ import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import CssBaseline from '@mui/material/CssBaseline'
 import Toolbar from '@mui/material/Toolbar'
+import TextField from '@mui/material/TextField'
+import InputLabel from '@mui/material/InputLabel'
+import { useSelector } from 'react-redux'
 import Grid from '@mui/material/Grid'
 import './App.css'
 
@@ -17,23 +20,24 @@ import useStyles from './styles'
 function App() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [variables, setvariables] = useState(['A', 'B', 'C', 'D'])
-  const [expression, setExpression] = useState([0, 2, 8, 10, 1, 9])
-  const [inputValue, setInputValue] = useState('')
+  const [expression, setExpression] = useState([0, 2, 8, 10, 4, 6])
   const classes = useStyles()
-
   const drawerWidth = 240
+  const functionalExp = useSelector(state => state.funcExp)
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen)
   }
-  const handlleExpression = newExp => {
+
+  const handleExpression = newExp => {
     setExpression(newExp)
   }
 
   const handleVariable = newVariable => {
     setvariables(newVariable)
   }
-
+  if (expression.length > Math.pow(2, variables.length))
+    alert('Expression length exceed for given variable')
   return (
     <div className="App">
       <Box sx={{ display: 'flex' }}>
@@ -48,7 +52,12 @@ function App() {
           }}
         >
           <Toolbar>
-            <Form handleExpression={handlleExpression} variables={variables} />
+            <Form handleExpression={handleExpression} variables={variables} />
+            <InputLabel sx={{ marginLeft: '129px' }}>Expression :</InputLabel>
+
+            <InputLabel sx={{ marginLeft: '129px', color: 'red' }}>
+              {functionalExp.exp}{' '}
+            </InputLabel>
           </Toolbar>
         </AppBar>
 
