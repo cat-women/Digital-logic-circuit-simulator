@@ -153,23 +153,11 @@ function removeRedundantIslands(islands, row, col, kMap) {
   return islands
 }
 
-export function getIslands(data, variables = ['A', 'B', 'C', 'D']) {
-  let kMap = data.kMapValue
-  const colElement = data.colElement
-  const rowElement = data.rowElement
-  const variableCount = variables.length
-
-  const col = colElement.length > 1 ? Math.pow(2, data.colElement.length) : 2
-  const row = rowElement.length > 1 ? Math.pow(2, data.rowElement.length) : 2
-  if (kMap.length < 1) return null
-  /** sequence to store kmap varibale combination */
-  let sequence = []
-
-  for (let i = 0; i < Math.pow(2, variableCount); i++) {
-    sequence.push(binaryToGray(decimalToBinary(i, variableCount)))
-  }
-
+function grouping(kMap, row, col) {
   let islands = []
+
+  let rowIslands = []
+  let colIslands = []
 
   // For Whole Matrix Grouping
   for (let j = 0; j < row; j++) {
@@ -202,8 +190,6 @@ export function getIslands(data, variables = ['A', 'B', 'C', 'D']) {
       }
     }
   }
-
-  let rowIslands = []
   // For Row  Corner Grouping
   for (let j = 0; j < row; j += 4) {
     for (let i = 0; i < col; i++) {
@@ -235,7 +221,6 @@ export function getIslands(data, variables = ['A', 'B', 'C', 'D']) {
     }
   }
 
-  let colIslands = []
   /* For column  Corner Grouping */
   for (let i = 0; i < col; i += 4) {
     for (let j = 0; j < row; j++) {
@@ -271,17 +256,122 @@ export function getIslands(data, variables = ['A', 'B', 'C', 'D']) {
   colIslands = islands.concat(colIslands)
   rowIslands.sort((a, b) => b.area - a.area)
   colIslands.sort((a, b) => b.area - a.area)
+  islands.sort((a, b) => b.area - a.area)
 
   rowIslands = removeRedundantIslands(rowIslands, row, col, kMap)
   colIslands = removeRedundantIslands(colIslands, row, col, kMap)
+  islands = removeRedundantIslands(islands, row, col, kMap)
+
   islands = [
     ...(rowIslands.length ? rowIslands : []),
     ...(colIslands.length ? colIslands : []),
     ...islands
   ]
 
+  return islands
+}
+
+function createSubArray(kMap) {
+  let subArrays = []
+  const subArraySize = 4
+
+  for (let i = 0; i < kMap.length; i += subArraySize) {
+    for (let j = 0; j < kMap[i].length; j += subArraySize) {
+      const subArray = []
+      for (let row = i; row < i + subArraySize; row++) {
+        const subRow = kMap[row].slice(j, j + subArraySize)
+        subArray.push(subRow)
+      }
+      subArrays.push(subArray)
+    }
+  }
+  return subArrays
+}
+
+export function getIslands(data, variables = ['A', 'B', 'C', 'D']) {
+  let kMap = data.kMapValue
+  const colElement = data.colElement
+  const rowElement = data.rowElement
+  const variableCount = variables.length
+
+  const col = colElement.length > 1 ? Math.pow(2, data.colElement.length) : 2
+  const row = rowElement.length > 1 ? Math.pow(2, data.rowElement.length) : 2
+  let subArrays
+  let islands
+  if (kMap.length < 1) return null
+  /** sequence to store kmap varibale combination */
+  let sequence = []
+
+  for (let i = 0; i < Math.pow(2, variableCount); i++) {
+    sequence.push(binaryToGray(decimalToBinary(i, variableCount)))
+  }
+  if (variableCount > 4) subArrays = createSubArray(kMap)
+  if (subArrays) {
+    let totalIslands = []
+    subArrays.forEach(arr => {
+      totalIslands.push(grouping(arr, 4, 4))
+    })
+
+    console.log('total islands', totalIslands)
+
+    let newArray = []
+    let x, y
+
+    totalIslands.forEach((islands, index) => {
+      switch (index) {
+        case 0:
+          x = 0
+          y = 0
+          break
+        case 1:
+          x = 4
+          y = 0
+          break
+        case 2:
+          x = 0
+          y = 4
+          break
+        case 3:
+          x = 4
+          y = 4
+          break
+        default:
+          x = 0
+          y = 0
+          break
+      }
+
+      islands.forEach(island => {
+        let found = false
+        for (let j = 0; j < newArray.length; j++) {
+          if (
+            island.start.x === newArray[j].start.x &&
+            island.start.y === newArray[j].start.y &&
+            island.end.x === newArray[j].end.x &&
+            island.end.y === newArray[j].end.y &&
+            islands.corner === newArray.corner
+          ) {
+            newArray[j].area += island.area
+            newArray[j].start.y += y
+            newArray[j].start.x += x
+            found = true
+            break
+          }
+        }
+        if (!found) {
+          newArray.push(island)
+        }
+      })
+    })
+
+    console.log('after sorting', newArray)
+  }
+
+  islands = grouping(kMap, row, col)
   if (islands.length === 0) return '0'
   islands.sort((a, b) => b.area - a.area)
+
+  console.log("islands",islands);
   let result = createBooleanFunction(
     islands,
     row,

@@ -19,17 +19,8 @@ import useStyles from './styles'
 
 function App() {
   const [mobileOpen, setMobileOpen] = useState(false)
-  const [variables, setvariables] = useState(['A', 'B', 'C', 'D', 'E', 'F'])
-  const [expression, setExpression] = useState([
-    0,
-    2,
-    8,
-    10,
-    16,
-    18,
-    24,
-    26
-  ])
+  const [variables, setvariables] = useState(['A', 'B', 'C', 'D'])
+  const [expression, setExpression] = useState([0, 2, 8,10])
   const classes = useStyles()
   const drawerWidth = 240
   const functionalExp = useSelector(state => state.funcExp)

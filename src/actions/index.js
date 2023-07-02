@@ -2,7 +2,6 @@ import { createAsyncThunk } from '@reduxjs/toolkit'
 
 export const addKMap = createAsyncThunk('kMap', (data, thunkAPI) => {
   try {
-    console.log('in action add kMap', data)
     return data
   } catch (error) {
     console.log('KMap add error', error)
