@@ -56,3 +56,27 @@ export function getKmapPositionalArray(row, col) {
     }
   return posArray;
 }
+
+
+export function removeRedundant(islands, row, col) {
+
+  let visited = new Array(row)
+  for (let i = 0; i < row; i++) visited[i] = new Array(col).fill(false)
+  
+  islands = islands.filter(island => {
+    let flag = false
+    for (let j = island.start.y; j <= island.end.y; j++) {
+      for (let i = island.start.x; i <= island.end.x; i++) {
+        if (visited[j][i] === false) {
+          visited[j][i] = true
+          flag = true
+        }
+      }
+    }
+
+  return flag
+})
+
+return islands
+}
+
