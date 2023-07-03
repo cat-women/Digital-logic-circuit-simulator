@@ -101,18 +101,13 @@ function createBooleanFunction(
     }
 
     if (island.corner === 'row' || island.corner === 'corner') {
-      rowSequence = [rowSequence[0], rowSequence[rowSequence.length - 1]]
+      if (rowSequence.length != 4)
+        rowSequence = [rowSequence[0], rowSequence[rowSequence.length - 1]]
     }
 
     /** For six variable add msb variable  */
     if (rowElement.length === 3) {
-      if (
-        !(
-          island.msbChange &&
-          (island.msbChange === 'row' || island.msbChange === 'rowcol')
-        ) ||
-        !island.msbChange
-      ) {
+      if (!island.msbChange) {
         if (island.table === 0 || island.table === 1)
           output += rowElement[0] + "'"
         if (island.table === 2 || island.table === 3) output += rowElement[0]
@@ -133,7 +128,6 @@ function createBooleanFunction(
 
     // to get colunm variables
     let colSequence = sequence.slice(island.start.x, island.end.x + 1)
-
     /** For five and Six variable remove msb */
     if (colVarCount === 3) {
       colVar = colElement.slice(1, colVarCount)
@@ -141,7 +135,8 @@ function createBooleanFunction(
     }
 
     if (island.corner === 'col' || island.corner === 'corner') {
-      colSequence = [colSequence[0], colSequence[colSequence.length - 1]]
+      if (colSequence.length !== 4)
+        colSequence = [colSequence[0], colSequence[colSequence.length - 1]]
     }
 
     // remove first rowElement bit and msb
@@ -156,13 +151,7 @@ function createBooleanFunction(
 
     /** For six variable add msb variable  */
     if (colElement.length === 3) {
-      if (
-        !(
-          island.msbChange &&
-          (island.msbChange === 'col' || island.msbChange === 'rowcol')
-        ) ||
-        !island.msbChange
-      ) {
+      if (!island.msbChange) {
         if (island.table === 0 || island.table === 2)
           output += colElement[0] + "'"
         if (island.table === 1 || island.table === 3) output += colElement[0]
@@ -312,12 +301,9 @@ function grouping(kMap, row, col) {
         if (!isSafe(i, j + h, kMap) || !isSafe(i + w, j + h, kMap)) break
 
         if (Math.log2(h + 1) % 1 !== 0) {
-          // if (!isSafe(i, j+h, kMap) || !isSafe(i + w, j + h, kMap)) break
-
           if (!isSafe(i, j + h + 1, kMap) || !isSafe(i + w, j + h + 1, kMap))
             break
           area += 4
-
           colIslands.push(makeIslandObject(i, j, w, j + h + 1, area, 'col'))
           break
         } else {
@@ -448,39 +434,24 @@ export function getIslands(data, variables = ['A', 'B', 'C', 'D']) {
     })
 
     let newArray = []
-    let msbChange = false
 
     totalIslands.forEach((islands, index) => {
-      switch (index) {
-        case 1:
-          msbChange = 'col'
-          break
-        case 2:
-          msbChange = 'row'
-          break
-        case 3:
-          msbChange = 'rowcol'
-          break
-        default:
-          break
-      }
       islands.forEach(island => {
-        let repeat = 0
         let found = false
         island.table = index
+
         for (let j = 0; j < newArray.length; j++) {
           if (
             island.start.x === newArray[j].start.x &&
             island.start.y === newArray[j].start.y &&
             island.end.x === newArray[j].end.x &&
             island.end.y === newArray[j].end.y &&
-            islands.corner === newArray.corner
+            island.corner === newArray.corner
           ) {
             found = true
-            newArray[j].area += island.area
-            if (repeat > 0) newArray[j].msbChange = msbChange
-            repeat++
+            // newArray[j].area += island.area
             newArray[j].table = index
+            newArray[j].msbChange = true
             break
           }
         }

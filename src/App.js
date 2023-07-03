@@ -19,12 +19,14 @@ import useStyles from './styles'
 
 function App() {
   const [mobileOpen, setMobileOpen] = useState(false)
-  const [variables, setvariables] = useState(['A', 'B', 'C', 'D','E','F'])
-  const [expression, setExpression] = useState([32, 33, 35, 34])
+  const [variables, setvariables] = useState(['A', 'B', 'C', 'D', 'E', 'F'])
+  const [expression, setExpression] = useState([
+    16,17,18,19
+  ])
   const classes = useStyles()
   const drawerWidth = 240
   const functionalExp = useSelector(state => state.funcExp)
-  console.log("expression",functionalExp.exp);
+  console.log('expression', functionalExp.exp)
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen)
   }
