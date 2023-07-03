@@ -45,7 +45,7 @@ export default function Kmap(props) {
   let colElementBitSize = Math.pow(2, colElement.length)
   const tableSize = Math.pow(2, variableCount)
 
-  const rowBits = []
+  const rowBits = []  
   const colBits = []
 
   /** Set row can col bits  */

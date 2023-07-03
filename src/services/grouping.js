@@ -165,7 +165,6 @@ function removeRedundantIslands(islands, row, col, kMap) {
 
 function grouping(kMap, row, col) {
   let islands = []
-
   let rowIslands = []
   let colIslands = []
   let cornerIslands = []
@@ -209,9 +208,11 @@ function grouping(kMap, row, col) {
     kMap[0][3] === 1 &&
     kMap[3][0] === 1 &&
     kMap[3][3] === 1
-  )
-    cornerIslands = [makeIslandObject(0, 0, 3, 3, 4, 'corner')]
+  ) {
+    let temp = makeIslandObject(0, 0, 3, 3, 4, 'corner')
 
+    cornerIslands = [temp]
+  }
   // For Row  Corner Grouping
   for (let j = 0; j < row; j += 4) {
     for (let i = 0; i < col; i++) {
@@ -384,9 +385,7 @@ export function getIslands(data, variables = ['A', 'B', 'C', 'D']) {
   for (let i = 0; i < Math.pow(2, variableCount); i++) {
     sequence.push(binaryToGray(decimalToBinary(i, variableCount)))
   }
-
   if (variableCount > 4) subArrays = createSubArray(kMap)
-
   if (subArrays) {
     let totalIslands = []
 
@@ -396,6 +395,8 @@ export function getIslands(data, variables = ['A', 'B', 'C', 'D']) {
 
     let newArray = []
     let x, y
+
+    console.log('totalIslands', totalIslands)
 
     totalIslands.forEach((islands, index) => {
       switch (index) {
@@ -443,6 +444,8 @@ export function getIslands(data, variables = ['A', 'B', 'C', 'D']) {
         }
       })
     })
+
+    console.log('new array', newArray)
   }
 
   islands = grouping(kMap, row, col)
