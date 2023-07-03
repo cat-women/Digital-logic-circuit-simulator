@@ -45,6 +45,7 @@ function createBooleanFunction(
 */
   islands.sort((a, b) => b.area - a.area)
 
+  /** remove redundant that was not remove earlier */
   islands = islands.filter(island => {
     if (
       island.corner === 'row' ||
@@ -73,7 +74,7 @@ function createBooleanFunction(
 
     return flag
   })
-
+  console.log('final island ', islands)
   // islands = removeRedundantIslands(islands, row, col, kMap)
 
   let rowVarCount = rowElement.length
@@ -83,7 +84,23 @@ function createBooleanFunction(
   let colVar = colElement
 
   islands.forEach(island => {
+    // to get row variables
     let rowSequence = sequence.slice(island.start.y, island.end.y + 1)
+
+    /** For Six variable remove msb */
+    if (rowElement.length === 3) {
+      rowVar = rowElement.replace(rowVar[0], '')
+
+      rowVarCount = rowVar.length
+
+      const msb = rowSequence[0].substring(0, 1)
+
+      const rowBits = rowSequence.map(element => {
+        element = element.replace(msb, '')
+        return element
+      })
+      rowSequence = rowBits
+    }
 
     if (island.corner === 'row' || island.corner === 'corner') {
       rowSequence = [rowSequence[0], rowSequence[rowSequence.length - 1]]
@@ -98,22 +115,62 @@ function createBooleanFunction(
         )
           currVarVal = ''
       }
+
+      /** For six variable add msb variable  */
+      if (rowSequence.length === 6) {
+        if (
+          !(
+            island.msbChange &&
+            (island.msbChange === 'row' || island.msbChange === 'rowcol')
+          )
+        ) {
+          if (island.table === 0 || island.table === 1)
+            output += rowElement[0] + "'"
+          if (island.table === 0 || island.table === 1) output += rowElement[0]
+        }
+      }
+
       if (currVarVal === '0') output += rowVar[v] + "'"
       else if (currVarVal === '1') output += rowVar[v]
     }
 
+    // to get colunm variables
     let colSequence = sequence.slice(island.start.x, island.end.x + 1)
 
-    /**If this is corner col  */
+    /** For five and Six variable remove msb */
+    if (colVarCount === 3) {
+      colVar = colElement.slice(1, colVarCount)
+      colVarCount = colVar.length // 2
+    }
 
     if (island.corner === 'col' || island.corner === 'corner') {
       colSequence = [colSequence[0], colSequence[colSequence.length - 1]]
     }
-    const toRemove = colSequence[0].substring(0, rowVarCount)
+
+    // remove first rowElement bit and msb
+    let end = rowElement.length
+    if (colElement.length === 3) end += 1
+    const toRemove = colSequence[0].substring(0, end)
+
     const rowBits = colSequence.map(element => {
       element = element.replace(toRemove, '')
       return element
     })
+
+    /** For six variable add msb variable  */
+    if (colElement.length === 3) {
+      if (
+        !(
+          island.msbChange &&
+          (island.msbChange === 'col' || island.msbChange === 'rowcol')
+        )
+      ) {
+        console.log('here====')
+        if (island.table === 0 || island.table === 2)
+          output += colElement[0] + "'"
+        if (island.table === 1 || island.table === 3) output += colElement[0]
+      }
+    }
 
     for (let v = 0; v < colVarCount; v++) {
       let currVarVal = rowBits[0][v]
@@ -394,31 +451,19 @@ export function getIslands(data, variables = ['A', 'B', 'C', 'D']) {
     })
 
     let newArray = []
-    let x, y
-
-    console.log('totalIslands', totalIslands)
-
+    let msbChange
     totalIslands.forEach((islands, index) => {
       switch (index) {
-        case 0:
-          x = 0
-          y = 0
-          break
         case 1:
-          x = 4
-          y = 0
+          msbChange = 'col'
           break
         case 2:
-          x = 0
-          y = 4
+          msbChange = 'row'
           break
         case 3:
-          x = 4
-          y = 4
+          msbChange = 'rowcol'
           break
         default:
-          x = 0
-          y = 0
           break
       }
 
@@ -432,10 +477,11 @@ export function getIslands(data, variables = ['A', 'B', 'C', 'D']) {
             island.end.y === newArray[j].end.y &&
             islands.corner === newArray.corner
           ) {
-            newArray[j].area += island.area
-            newArray[j].start.y += y
-            newArray[j].start.x += x
             found = true
+            newArray[j].area += island.area
+            newArray[j].msbChange = msbChange
+            newArray[j].table = index
+
             break
           }
         }
@@ -444,11 +490,8 @@ export function getIslands(data, variables = ['A', 'B', 'C', 'D']) {
         }
       })
     })
-
-    console.log('new array', newArray)
-  }
-
-  islands = grouping(kMap, row, col)
+    islands = newArray
+  } else islands = grouping(kMap, row, col)
 
   if (islands.length === 0) return '0'
   islands.sort((a, b) => b.area - a.area)

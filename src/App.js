@@ -24,7 +24,7 @@ function App() {
   const classes = useStyles()
   const drawerWidth = 240
   const functionalExp = useSelector(state => state.funcExp)
-
+  console.log("expression",functionalExp.exp);
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen)
   }
