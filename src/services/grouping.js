@@ -104,6 +104,20 @@ function createBooleanFunction(
       rowSequence = [rowSequence[0], rowSequence[rowSequence.length - 1]]
     }
 
+    /** For six variable add msb variable  */
+    if (rowElement.length === 3) {
+      if (
+        !(
+          island.msbChange &&
+          (island.msbChange === 'row' || island.msbChange === 'rowcol')
+        ) ||
+        !island.msbChange
+      ) {
+        if (island.table === 0 || island.table === 1)
+          output += rowElement[0] + "'"
+        if (island.table === 2 || island.table === 3) output += rowElement[0]
+      }
+    }
     for (let v = 0; v < rowVarCount; v++) {
       let currVarVal = rowSequence[0][rowSequence[0].length - rowVarCount + v]
 
@@ -113,21 +127,6 @@ function createBooleanFunction(
         )
           currVarVal = ''
       }
-
-      /** For six variable add msb variable  */
-      if (rowSequence.length === 6) {
-        if (
-          !(
-            island.msbChange &&
-            (island.msbChange === 'row' || island.msbChange === 'rowcol')
-          )
-        ) {
-          if (island.table === 0 || island.table === 1)
-            output += rowElement[0] + "'"
-          if (island.table === 0 || island.table === 1) output += rowElement[0]
-        }
-      }
-
       if (currVarVal === '0') output += rowVar[v] + "'"
       else if (currVarVal === '1') output += rowVar[v]
     }
@@ -155,7 +154,6 @@ function createBooleanFunction(
       return element
     })
 
-
     /** For six variable add msb variable  */
     if (colElement.length === 3) {
       if (
@@ -165,10 +163,8 @@ function createBooleanFunction(
         ) ||
         !island.msbChange
       ) {
-
         if (island.table === 0 || island.table === 2)
           output += colElement[0] + "'"
-        console.log("output",output);
         if (island.table === 1 || island.table === 3) output += colElement[0]
       }
     }
@@ -452,7 +448,8 @@ export function getIslands(data, variables = ['A', 'B', 'C', 'D']) {
     })
 
     let newArray = []
-    let msbChange
+    let msbChange = false
+
     totalIslands.forEach((islands, index) => {
       switch (index) {
         case 1:
@@ -467,11 +464,10 @@ export function getIslands(data, variables = ['A', 'B', 'C', 'D']) {
         default:
           break
       }
-
       islands.forEach(island => {
+        let repeat = 0
         let found = false
         island.table = index
-
         for (let j = 0; j < newArray.length; j++) {
           if (
             island.start.x === newArray[j].start.x &&
@@ -482,7 +478,8 @@ export function getIslands(data, variables = ['A', 'B', 'C', 'D']) {
           ) {
             found = true
             newArray[j].area += island.area
-            newArray[j].msbChange = msbChange
+            if (repeat > 0) newArray[j].msbChange = msbChange
+            repeat++
             newArray[j].table = index
             break
           }
