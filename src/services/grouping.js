@@ -89,7 +89,7 @@ function createBooleanFunction(
 
     /** For Six variable remove msb */
     if (rowElement.length === 3) {
-      rowVar = rowElement.slice(1,rowVarCount)
+      rowVar = rowElement.slice(1, rowVarCount)
       rowVarCount = rowVar.length
 
       const msb = rowSequence[0].substring(0, 1)
@@ -155,16 +155,20 @@ function createBooleanFunction(
       return element
     })
 
+
     /** For six variable add msb variable  */
     if (colElement.length === 3) {
       if (
         !(
           island.msbChange &&
           (island.msbChange === 'col' || island.msbChange === 'rowcol')
-        )
+        ) ||
+        !island.msbChange
       ) {
+
         if (island.table === 0 || island.table === 2)
           output += colElement[0] + "'"
+        console.log("output",output);
         if (island.table === 1 || island.table === 3) output += colElement[0]
       }
     }
@@ -466,6 +470,8 @@ export function getIslands(data, variables = ['A', 'B', 'C', 'D']) {
 
       islands.forEach(island => {
         let found = false
+        island.table = index
+
         for (let j = 0; j < newArray.length; j++) {
           if (
             island.start.x === newArray[j].start.x &&
@@ -478,7 +484,6 @@ export function getIslands(data, variables = ['A', 'B', 'C', 'D']) {
             newArray[j].area += island.area
             newArray[j].msbChange = msbChange
             newArray[j].table = index
-
             break
           }
         }
