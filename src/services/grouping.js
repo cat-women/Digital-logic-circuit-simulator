@@ -89,12 +89,10 @@ function createBooleanFunction(
 
     /** For Six variable remove msb */
     if (rowElement.length === 3) {
-      rowVar = rowElement.replace(rowVar[0], '')
-
+      rowVar = rowElement.slice(1,rowVarCount)
       rowVarCount = rowVar.length
 
       const msb = rowSequence[0].substring(0, 1)
-
       const rowBits = rowSequence.map(element => {
         element = element.replace(msb, '')
         return element
@@ -165,7 +163,6 @@ function createBooleanFunction(
           (island.msbChange === 'col' || island.msbChange === 'rowcol')
         )
       ) {
-        console.log('here====')
         if (island.table === 0 || island.table === 2)
           output += colElement[0] + "'"
         if (island.table === 1 || island.table === 3) output += colElement[0]
