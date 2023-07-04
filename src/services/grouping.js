@@ -100,10 +100,12 @@ function createBooleanFunction(
       rowSequence = rowBits
     }
 
-    if (island.corner === 'row' || island.corner === 'corner') {
-      if (rowSequence.length != 4)
+    if (island.corner === 'row') {
+      if (rowSequence.length !== 4)
         rowSequence = [rowSequence[0], rowSequence[rowSequence.length - 1]]
     }
+    if (island.corner === 'corner')
+      rowSequence = [rowSequence[0], rowSequence[rowSequence.length - 1]]
 
     /** For six variable add msb variable  */
     if (rowElement.length === 3) {
@@ -134,10 +136,12 @@ function createBooleanFunction(
       colVarCount = colVar.length // 2
     }
 
-    if (island.corner === 'col' || island.corner === 'corner') {
+    if (island.corner === 'col') {
       if (colSequence.length !== 4)
         colSequence = [colSequence[0], colSequence[colSequence.length - 1]]
     }
+    if (island.corner === 'corner')
+      colSequence = [colSequence[0], colSequence[colSequence.length - 1]]
 
     // remove first rowElement bit and msb
     let end = rowElement.length
@@ -446,10 +450,10 @@ export function getIslands(data, variables = ['A', 'B', 'C', 'D']) {
             island.start.y === newArray[j].start.y &&
             island.end.x === newArray[j].end.x &&
             island.end.y === newArray[j].end.y &&
-            island.corner === newArray.corner
+            island.corner === newArray[j].corner
           ) {
             found = true
-            // newArray[j].area += island.area
+            newArray[j].area += island.area
             newArray[j].table = index
             newArray[j].msbChange = true
             break
