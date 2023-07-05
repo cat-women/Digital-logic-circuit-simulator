@@ -5,6 +5,7 @@ import {
   isRightSafe,
   removeRedundant
 } from './common.js'
+import { getVisited } from './mapping.js'
 
 function makeIslandObject(x1, y1, x2, y2, area, corner) {
   return {
@@ -44,11 +45,10 @@ function createBooleanFunction(
   })
 */
   islands.sort((a, b) => b.area - a.area)
-  console.log('islands before filtering ', islands)
+
   /** remove redundant that was not remove earlier */
   islands = islands.filter(island => {
     // for three and two variable
-
     if (row + col < 7 && island.corner === 'col') {
       if (island.area === 4) {
         visited[0][0] = true
@@ -63,15 +63,8 @@ function createBooleanFunction(
       return true
     }
 
-    if (
-      row + col > 7 &&
-      (island.corner === 'row' ||
-        island.corner === 'col' ||
-        island.corner === 'corner')
-    ) {
-      visited[island.start.y][island.start.x] = true
-      visited[island.end.y][island.end.x] = true
-      return true
+    if (row + col > 7) {
+      visited = getVisited(island, visited)
     }
     let flag = false
 
@@ -114,7 +107,6 @@ function createBooleanFunction(
     }
 
     if (island.corner === 'row') {
-      if (rowSequence.length !== 4)
         rowSequence = [rowSequence[0], rowSequence[rowSequence.length - 1]]
     }
     if (island.corner === 'corner')
@@ -263,80 +255,85 @@ function grouping(kMap, row, col) {
 
   // corner grouping
   // for more than 4 variable
-  if (
-    row + col === 8 &&
-    kMap[0][0] === 1 &&
-    kMap[0][3] === 1 &&
-    kMap[3][0] === 1 &&
-    kMap[3][3] === 1
-  )
-    cornerIslands.push(makeIslandObject(0, 0, 3, 3, 4, 'corner'))
 
-  // For Row  Corner Grouping
-  // No need  corner grouping for less than 4 variable
+  let isZero = kMap.some(row => row.some(element => element === 0))
+  if (row + col > 7 && isZero) {
+    // For Row  Corner Grouping
 
-  if (row + col > 7) {
-    for (let j = 0; j < row; j += 4) {
-      for (let i = 0; i < col; i++) {
-        /**w = width of island , h = height of island  */
+    let j = 0
+    let isLargest = false
 
-        let w = 1,
-          h = 3
-        let area = 2
-        if (!isSafe(i, j, kMap) || !isSafe(i, j + h, kMap)) break
-        rowIslands.push(makeIslandObject(i, j, i, j + h, area, 'row'))
-        while (true) {
+    for (let i = 0; i < col; i++) {
+      let w = 1,
+        h = 3
+      let area = 2
+      if (!isSafe(i, j, kMap) || !isSafe(i, j + h, kMap)) continue
+
+      isZero = kMap.some(item => item[i] === 0)
+
+      if (isZero) rowIslands.push(makeIslandObject(i, j, i, j + h, area, 'row'))
+      while (true) {
+        if (!isSafe(i + w, j, kMap) || !isSafe(i + w, j + h, kMap)) break
+
+        if (Math.log2(w + 1) % 1 !== 0) {
           if (!isSafe(i + w, j, kMap) || !isSafe(i + w, j + h, kMap)) break
 
-          if (Math.log2(w + 1) % 1 !== 0) {
-            if (!isSafe(i + w, j, kMap) || !isSafe(i + w, j + h, kMap)) break
-
-            if (!isSafe(i + w + 1, j, kMap) || !isSafe(i + w + 1, j + h, kMap))
-              break
-            area += 4
-
-            rowIslands.push(makeIslandObject(i, j, w + 1, j + h, area, 'row'))
+          if (!isSafe(i + w + 1, j, kMap) || !isSafe(i + w + 1, j + h, kMap))
             break
-          } else {
-            area += 2
-            rowIslands.push(makeIslandObject(i, j, i + w, j + h, area, 'row'))
-          }
-          w++
+          area += 4
+
+          rowIslands.push(makeIslandObject(i, j, w + 1, j + h, area, 'row'))
+          isLargest = true
+          break
+        } else {
+          area += 2
+          rowIslands.push(makeIslandObject(i, j, i + w, j + h, area, 'row'))
         }
+        w++
       }
+      if (isLargest) break
     }
 
     /* For column  Corner Grouping */
-    for (let i = 0; i < col; i += 4) {
-      for (let j = 0; j < row; j++) {
-        /**w = width of island , h = height of island  */
-        let w = 3,
-          h = 1
-        let area = 2
 
-        if (!isSafe(i, j, kMap) || !isSafe(i + w, j, kMap)) break
+    let i = 0
+    for (let j = 0; j < row; j++) {
+      let w = 3,
+        h = 1
+      let area = 2
+
+      if (!isSafe(i, j, kMap) || !isSafe(i + w, j, kMap)) continue
+      isZero = kMap[j].some(element => element === 0)
+      if (isZero) {
         colIslands.push(makeIslandObject(i, j, i + w, j, area, 'col'))
-        while (true) {
-          if (!isSafe(i, j + h, kMap) || !isSafe(i + w, j + h, kMap)) break
-
-          if (Math.log2(h + 1) % 1 !== 0) {
-            if (!isSafe(i, j + h + 1, kMap) || !isSafe(i + w, j + h + 1, kMap))
-              break
-            area += 4
-            colIslands.push(makeIslandObject(i, j, w, j + h + 1, area, 'col'))
-            break
-          } else {
-            area += 2
-            colIslands.push(makeIslandObject(i, j, i + w, j + h, area, 'col'))
-          }
-          h++
-        }
       }
+      while (true) {
+        if (!isSafe(i, j + h, kMap) || !isSafe(i + w, j + h, kMap)) break
+
+        if (Math.log2(h + 1) % 1 !== 0) {
+          if (!isSafe(i, j + h + 1, kMap) || !isSafe(i + w, j + h + 1, kMap))
+            break
+
+          area += 4
+          colIslands.push(makeIslandObject(i, j, w, j + h + 1, area, 'col'))
+          isLargest = true
+          break
+        } else {
+          isZero = kMap
+            .slice(0, 2)
+            .some(row => row.some(element => element === 0))
+          if (!isZero) break
+
+          area += 2
+          colIslands.push(makeIslandObject(i, j, i + w, j + h, area, 'col'))
+        }
+        h++
+      }
+      if (isLargest) break
     }
   }
 
   // for three variable
-  let isZero = kMap.some(row => row.some(element => element === 0))
   if (row + col === 6 && isZero) {
     if (
       kMap[0][0] === 1 &&

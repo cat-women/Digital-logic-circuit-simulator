@@ -1,7 +1,61 @@
+/** Maping of area and visited cell  */
+export function getVisited(island, visited) {
+  if (island.corner === 'col') {
+    switch (island.area) {
+      case 8:
+        for (let i = 0; i < 4; i++) {
+          visited[i][0] = true
+          visited[i][3] = true
+        }
+        break
+      case 4:
+        visited[island.start.y][0] = true
+        visited[island.start.y][3] = true
+        visited[island.end.y][0] = true
+        visited[island.end.y][3] = true
+        break
+      case 2:
+        visited[island.start.y][0] = true
+        visited[island.start.y][3] = true
+        break
+
+      default:
+        break
+    }
+  }
+  if (island.corner === 'row') {
+    switch (island.area) {
+      case 8:
+        for (let i = 0; i < 4; i++) {
+          visited[0][i] = true
+          visited[3][i] = true
+        }
+        break
+      case 4:
+        visited[0][island.start.x] = true
+        visited[3][island.start.x] = true
+        visited[0][island.end.x] = true
+        visited[3][island.end.x] = true
+        break
+      case 2:
+        visited[0][island.start.x] = true
+        visited[3][island.start.x] = true
+        break
+
+      default:
+        break
+    }
+  }
+  if (island.corner === 'corner') {
+    visited[0][0] = true
+    visited[3][0] = true
+    visited[0][3] = true
+    visited[3][3] = true
+  }
+  return visited
+}
+
 /** Mapping between number of variable and functional expression */
-// export const validFunctionalExpression = {
-//   2 :
-// }
 
 /** Mapping from function to kmap */
 
