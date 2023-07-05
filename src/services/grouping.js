@@ -44,20 +44,22 @@ function createBooleanFunction(
   })
 */
   islands.sort((a, b) => b.area - a.area)
-
+  console.log('islands before filtering ', islands)
   /** remove redundant that was not remove earlier */
   islands = islands.filter(island => {
     // for three and two variable
 
     if (row + col < 7 && island.corner === 'col') {
-      for (let j = island.start.y; j <= island.end.y; j++) {
-        for (let i = island.start.x; i <= island.end.x; i++) {
-          if (visited[j][i] === false) {
-            visited[j][i] = true
-          }
-        }
+      if (island.area === 4) {
+        visited[0][0] = true
+        visited[0][3] = true
+        visited[1][0] = true
+        visited[1][3] = true
       }
-
+      if (island.area === 2) {
+        visited[island.start.y][island.start.x] = true
+        visited[island.end.y][island.end.x] = true
+      }
       return true
     }
 
@@ -72,6 +74,7 @@ function createBooleanFunction(
       return true
     }
     let flag = false
+
     for (let j = island.start.y; j <= island.end.y; j++) {
       for (let i = island.start.x; i <= island.end.x; i++) {
         if (visited[j][i] === false) {
@@ -333,16 +336,20 @@ function grouping(kMap, row, col) {
   }
 
   // for three variable
-  if (row + col === 6) {
-    let isCol = false
-
-    for (let i = 0; i < 2; i++) {
-      isCol = kMap[i].some(element => element === '0')
-
-      if (kMap[i][0] === '1' && kMap[i][3] === '1' && !isCol) {
-        colIslands.push(makeIslandObject(i, i, 3, i, 2, 'col'))
-        if (isSafe(i + 1, i, kMap) && isSafe(i + 1, 3, kMap))
-          colIslands.push(makeIslandObject(i, i, 3, 1, 4, 'col'))
+  let isZero = kMap.some(row => row.some(element => element === 0))
+  if (row + col === 6 && isZero) {
+    if (
+      kMap[0][0] === 1 &&
+      kMap[0][3] === 1 &&
+      kMap[1][0] === 1 &&
+      kMap[1][3] === 1
+    ) {
+      colIslands.push(makeIslandObject(0, 0, 3, 1, 4, 'col'))
+    } else {
+      for (let i = 0; i < 2; i++) {
+        isZero = kMap[i].some(element => element === 0)
+        if (isZero && kMap[i][0] === 1 && kMap[i][3] === 1)
+          colIslands.push(makeIslandObject(0, i, 3, i, 2, 'col'))
       }
     }
   }
@@ -351,7 +358,6 @@ function grouping(kMap, row, col) {
 
   rowIslands.sort((a, b) => b.area - a.area)
   colIslands.sort((a, b) => b.area - a.area)
-  islands.sort((a, b) => b.area - a.area)
 
   // remove redundant
   rowIslands = removeRedundantIslands(rowIslands, row, col, kMap)
@@ -360,6 +366,7 @@ function grouping(kMap, row, col) {
   // same as in row islands
   colIslands = removeRedundantIslands(colIslands, row, col, kMap)
   colIslands = removeRedundant(colIslands, row, col)
+
   islands = removeRedundantIslands(islands, row, col, kMap)
 
   // remove redundant rowislands and colislands
