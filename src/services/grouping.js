@@ -45,6 +45,7 @@ function createBooleanFunction(
   })
 */
   islands.sort((a, b) => b.area - a.area)
+  console.log('island Before sorting', islands)
 
   /** remove redundant that was not remove earlier */
   islands = islands.filter(island => {
@@ -70,6 +71,11 @@ function createBooleanFunction(
 
     for (let j = island.start.y; j <= island.end.y; j++) {
       for (let i = island.start.x; i <= island.end.x; i++) {
+        if (island.table && island.table === 1 && visited[j][i+4] === false) {
+          visited[j][i] = true
+          flag = true
+        }
+        
         if (visited[j][i] === false) {
           visited[j][i] = true
           flag = true
@@ -107,14 +113,14 @@ function createBooleanFunction(
     }
 
     if (island.corner === 'row') {
-        rowSequence = [rowSequence[0], rowSequence[rowSequence.length - 1]]
+      rowSequence = [rowSequence[0], rowSequence[rowSequence.length - 1]]
     }
     if (island.corner === 'corner')
       rowSequence = [rowSequence[0], rowSequence[rowSequence.length - 1]]
 
     /** For six variable add msb variable  */
     if (rowElement.length === 3) {
-      if (!island.msbChange) {
+      if (!island.msbChange || (island.msbChange && island.table !== 2)) {
         if (island.table === 0 || island.table === 1)
           output += rowElement[0] + "'"
         if (island.table === 2 || island.table === 3) output += rowElement[0]
@@ -160,9 +166,8 @@ function createBooleanFunction(
 
     /** For six variable add msb variable  */
     if (colElement.length === 3) {
-      if (!island.msbChange) {
-        if (island.table === 0 || island.table === 2)
-          output += colElement[0] + "'"
+      if (!island.msbChange || (island.msbChange && island.table !== 1)) {
+        if (island.table === 0 || island.table === 2) output += colElement[0] + "'"
         if (island.table === 1 || island.table === 3) output += colElement[0]
       }
     }
