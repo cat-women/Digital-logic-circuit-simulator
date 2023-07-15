@@ -7,12 +7,13 @@ import {
 } from './common.js'
 import { getVisited } from './mapping.js'
 
-function makeIslandObject(x1, y1, x2, y2, area, corner) {
+function makeIslandObject(x1, y1, x2, y2, tableIndex, area, corner) {
   return {
     start: { x: x1, y: y1 },
     end: { x: x2, y: y2 },
     area: area ? area : (x2 - x1 + 1) * (y2 - y1 + 1),
-    corner: corner ? corner : false
+    corner: corner ? corner : false,
+    table: tableIndex
   }
 }
 
@@ -71,15 +72,27 @@ function createBooleanFunction(
 
     for (let j = island.start.y; j <= island.end.y; j++) {
       for (let i = island.start.x; i <= island.end.x; i++) {
-        if (island.table && island.table === 1 && visited[j][i+4] === false) {
+        if (island.table === 0 && visited[j][i] === false) {
           visited[j][i] = true
           flag = true
         }
-        
-        if (visited[j][i] === false) {
-          visited[j][i] = true
+
+        if (island.table === 1 && visited[j][i + 4] === false) {
+          visited[j][i + 4] = true
           flag = true
         }
+        if (island.table === 2 && visited[j + 4][i] === false) {
+          visited[j + 4][i] = true
+          flag = true
+        }
+        // if (
+        //   visited[j][i] === false &&
+        //   island.table === 3 &&
+        //   visited[j + 4][i + 4] === false
+        // ) {
+        //   visited[j + 4][i + 4] = true
+        //   flag = true
+        // }
       }
     }
     return flag
@@ -167,7 +180,8 @@ function createBooleanFunction(
     /** For six variable add msb variable  */
     if (colElement.length === 3) {
       if (!island.msbChange || (island.msbChange && island.table !== 1)) {
-        if (island.table === 0 || island.table === 2) output += colElement[0] + "'"
+        if (island.table === 0 || island.table === 2)
+          output += colElement[0] + "'"
         if (island.table === 1 || island.table === 3) output += colElement[0]
       }
     }
@@ -220,7 +234,7 @@ function removeRedundantIslands(islands, row, col, kMap) {
   return islands
 }
 
-function grouping(kMap, row, col) {
+function grouping(kMap, row, col, tableIndex) {
   let islands = []
   let rowIslands = []
   let colIslands = []
@@ -230,7 +244,7 @@ function grouping(kMap, row, col) {
   for (let j = 0; j < row; j++) {
     for (let i = 0; i < col; i++) {
       if (!isSafe(i, j, kMap)) continue
-      islands.push(makeIslandObject(i, j, i, j))
+      islands.push(makeIslandObject(i, j, i, j, tableIndex))
       let w = 1,
         h = 1
       while (isSafe(i, j + h - 1, kMap)) {
@@ -242,12 +256,16 @@ function grouping(kMap, row, col) {
         while (true) {
           if (!isRightSafe(w, h, i, j, kMap)) {
             if (Math.log2(w) % 1 === 0) {
-              islands.push(makeIslandObject(i, j, i + w - 1, j + h - 1))
+              islands.push(
+                makeIslandObject(i, j, i + w - 1, j + h - 1, tableIndex)
+              )
               break
             } else {
               let newW = w
               while (Math.log2(newW) % 1 !== 0) newW--
-              islands.push(makeIslandObject(i, j, i + newW - 1, j + h - 1))
+              islands.push(
+                makeIslandObject(i, j, i + newW - 1, j + h - 1, tableIndex)
+              )
               break
             }
           }
@@ -276,7 +294,10 @@ function grouping(kMap, row, col) {
 
       isZero = kMap.some(item => item[i] === 0)
 
-      if (isZero) rowIslands.push(makeIslandObject(i, j, i, j + h, area, 'row'))
+      if (isZero)
+        rowIslands.push(
+          makeIslandObject(i, j, i, j + h, tableIndex, area, 'row')
+        )
       while (true) {
         if (!isSafe(i + w, j, kMap) || !isSafe(i + w, j + h, kMap)) break
 
@@ -287,12 +308,16 @@ function grouping(kMap, row, col) {
             break
           area += 4
 
-          rowIslands.push(makeIslandObject(i, j, w + 1, j + h, area, 'row'))
+          rowIslands.push(
+            makeIslandObject(i, j, w + 1, j + h, tableIndex, area, 'row')
+          )
           isLargest = true
           break
         } else {
           area += 2
-          rowIslands.push(makeIslandObject(i, j, i + w, j + h, area, 'row'))
+          rowIslands.push(
+            makeIslandObject(i, j, i + w, j + h, tableIndex, area, 'row')
+          )
         }
         w++
       }
@@ -310,7 +335,9 @@ function grouping(kMap, row, col) {
       if (!isSafe(i, j, kMap) || !isSafe(i + w, j, kMap)) continue
       isZero = kMap[j].some(element => element === 0)
       if (isZero) {
-        colIslands.push(makeIslandObject(i, j, i + w, j, area, 'col'))
+        colIslands.push(
+          makeIslandObject(i, j, i + w, j, tableIndex, area, 'col')
+        )
       }
       while (true) {
         if (!isSafe(i, j + h, kMap) || !isSafe(i + w, j + h, kMap)) break
@@ -320,7 +347,9 @@ function grouping(kMap, row, col) {
             break
 
           area += 4
-          colIslands.push(makeIslandObject(i, j, w, j + h + 1, area, 'col'))
+          colIslands.push(
+            makeIslandObject(i, j, w, j + h + 1, tableIndex, area, 'col')
+          )
           isLargest = true
           break
         } else {
@@ -330,7 +359,9 @@ function grouping(kMap, row, col) {
           if (!isZero) break
 
           area += 2
-          colIslands.push(makeIslandObject(i, j, i + w, j + h, area, 'col'))
+          colIslands.push(
+            makeIslandObject(i, j, i + w, j + h, tableIndex, area, 'col')
+          )
         }
         h++
       }
@@ -346,12 +377,12 @@ function grouping(kMap, row, col) {
       kMap[1][0] === 1 &&
       kMap[1][3] === 1
     ) {
-      colIslands.push(makeIslandObject(0, 0, 3, 1, 4, 'col'))
+      colIslands.push(makeIslandObject(0, 0, 3, 1, tableIndex, 4, 'col'))
     } else {
       for (let i = 0; i < 2; i++) {
         isZero = kMap[i].some(element => element === 0)
         if (isZero && kMap[i][0] === 1 && kMap[i][3] === 1)
-          colIslands.push(makeIslandObject(0, i, 3, i, 2, 'col'))
+          colIslands.push(makeIslandObject(0, i, 3, i, tableIndex, 2, 'col'))
       }
     }
   }
@@ -370,7 +401,7 @@ function grouping(kMap, row, col) {
   colIslands = removeRedundant(colIslands, row, col)
 
   islands = removeRedundantIslands(islands, row, col, kMap)
-
+  console.log('initial islands', islands)
   // remove redundant rowislands and colislands
   if (cornerIslands.length > 0) {
     rowIslands = rowIslands.filter(island => {
@@ -470,16 +501,15 @@ export function getIslands(data, variables = ['A', 'B', 'C', 'D']) {
   if (subArrays) {
     let totalIslands = []
 
-    subArrays.forEach(arr => {
-      totalIslands.push(grouping(arr, 4, 4))
+    subArrays.forEach((arr, index) => {
+      totalIslands.push(grouping(arr, 4, 4, index))
     })
 
     let newArray = []
-
+    console.log('all islands', totalIslands)
     totalIslands.forEach((islands, index) => {
       islands.forEach(island => {
         let found = false
-        island.table = index
 
         for (let j = 0; j < newArray.length; j++) {
           if (
@@ -494,6 +524,57 @@ export function getIslands(data, variables = ['A', 'B', 'C', 'D']) {
             newArray[j].table = index
             newArray[j].msbChange = true
             break
+          }
+
+          console.log('area: ', newArray[j].area)
+          console.log('area island: ', island.area)
+          if (newArray[j].area > island.area) {
+            // check if island is inside newArray
+            console.log('start x', newArray[j].start.x)
+            console.log('end x', newArray[j].end.x)
+            let positionsOfNewArray = []
+            for (let k = newArray[j].start.x; k <= newArray[j].end.x; k++) {
+              for (let l = newArray[j].start.y; l <= newArray[j].end.y; l++) {
+                positionsOfNewArray.push([k, l])
+              }
+            }
+            console.log('newArrayPositions: ', positionsOfNewArray)
+            let islandStartInside = false
+            let islandEndInside = false
+            let startFoundInX = 0
+            let startFoundInY = 0
+            let endFoundInX = 0
+            let endFoundInY = 0
+            for (let position of positionsOfNewArray) {
+              let x = position[0]
+              let y = position[1]
+              console.log('x: ', x)
+              console.log('y: ', y)
+              if (island.start.x == x && island.start.y == y) {
+                islandStartInside = true
+                startFoundInX = x
+                startFoundInY = y
+              }
+              if (island.end.x == x && island.end.y == y) {
+                islandEndInside = true
+                endFoundInX = x
+                endFoundInY = y
+              }
+            }
+            if (islandStartInside && islandEndInside) {
+              island.area = island.area * 2
+              island.msbChange = true
+              break
+            }
+          } else {
+            // check if newArray is inside island
+            let positionsOfIsland = []
+            for (let k = island.start.x; k < island.end.x; k++) {
+              for (let l = island.start.y; island.end.y; j++) {
+                positionsOfIsland.push([k, l])
+              }
+            }
+            console.log('positionsOfIsland: ', positionsOfIsland)
           }
         }
         if (!found) {
