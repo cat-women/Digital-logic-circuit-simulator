@@ -29,25 +29,9 @@ function createBooleanFunction(
   let output = ''
   let visited = new Array(row)
   for (let i = 0; i < row; i++) visited[i] = new Array(col).fill(false)
-  /** has original function  */
-  /*
-  islands = islands.filter(island => {
-    let flag = false
-    for (let j = island.start.y; j <= island.end.y; j++) {
-      for (let i = island.start.x; i <= island.end.x; i++) {
-        if (visited[j][i] === false) {
-          visited[j][i] = true
-          flag = true
-        }
-      }
-    }
 
-    return flag
-  })
-*/
   islands.sort((a, b) => b.area - a.area)
-  console.log('island Before sorting', islands)
-
+  console.log('before sorting ', islands)
   /** remove redundant that was not remove earlier */
   islands = islands.filter(island => {
     // for three and two variable
@@ -83,6 +67,10 @@ function createBooleanFunction(
         }
         if (island.table === 2 && visited[j + 4][i] === false) {
           visited[j + 4][i] = true
+          flag = true
+        }
+        if (island.table === 3 && visited[j + 4][i + 4] === false) {
+          visited[j + 4][i + 4] = true
           flag = true
         }
         // if (
@@ -133,10 +121,10 @@ function createBooleanFunction(
 
     /** For six variable add msb variable  */
     if (rowElement.length === 3) {
-      if (!island.msbChange || (island.msbChange && island.table !== 2)) {
-        if (island.table === 0 || island.table === 1)
+      if (!island.msbChange || island.endTable) {
+        if (island.table === 0 && island.endTable === 1)
           output += rowElement[0] + "'"
-        if (island.table === 2 || island.table === 3) output += rowElement[0]
+        if (island.table === 2 && island.endTable === 3) output += rowElement[0]
       }
     }
     for (let v = 0; v < rowVarCount; v++) {
@@ -179,10 +167,10 @@ function createBooleanFunction(
 
     /** For six variable add msb variable  */
     if (colElement.length === 3) {
-      if (!island.msbChange || (island.msbChange && island.table !== 1)) {
-        if (island.table === 0 || island.table === 2)
+      if (!island.msbChange || island.endTable) {
+        if (island.table === 0 && island.endTable === 2)
           output += colElement[0] + "'"
-        if (island.table === 1 || island.table === 3) output += colElement[0]
+        if (island.table === 1 && island.endTable === 3) output += colElement[0]
       }
     }
 
@@ -368,24 +356,18 @@ function grouping(kMap, row, col, tableIndex) {
     }
 
     // Corner grouping
-    console.log(
-      'condition one',
-      kMap[0][0] === 1,
-      kMap[0][3] === 1,
-      kMap[3][0] === 1,
-      kMap[3][3] === 1
-    )
+
     if (
       kMap[0][0] === 1 &&
       kMap[0][3] === 1 &&
       kMap[3][0] === 1 &&
       kMap[3][3] === 1
     )
-      makeIslandObject(0, 0, 3, 3, tableIndex, 4, 'corner')
+      cornerIslands.push(makeIslandObject(0, 0, 3, 3, tableIndex, 4, 'corner'))
   }
 
-  // for three variable
   if (row + col === 6 && isZero) {
+    // for three variable
     if (
       kMap[0][0] === 1 &&
       kMap[0][3] === 1 &&
@@ -520,7 +502,6 @@ export function getIslands(data, variables = ['A', 'B', 'C', 'D']) {
     })
 
     let newArray = []
-    console.log('all islands', totalIslands)
     totalIslands.forEach((islands, index) => {
       islands.forEach(island => {
         let found = false
@@ -535,24 +516,20 @@ export function getIslands(data, variables = ['A', 'B', 'C', 'D']) {
           ) {
             found = true
             newArray[j].area += island.area
-            newArray[j].table = index
+            newArray[j].table = newArray[j].table
+            newArray[j].endTable = island.table
             newArray[j].msbChange = true
             break
           }
 
-          console.log('area: ', newArray[j].area)
-          console.log('area island: ', island.area)
           if (newArray[j].area > island.area) {
             // check if island is inside newArray
-            console.log('start x', newArray[j].start.x)
-            console.log('end x', newArray[j].end.x)
             let positionsOfNewArray = []
             for (let k = newArray[j].start.x; k <= newArray[j].end.x; k++) {
               for (let l = newArray[j].start.y; l <= newArray[j].end.y; l++) {
                 positionsOfNewArray.push([k, l])
               }
             }
-            console.log('newArrayPositions: ', positionsOfNewArray)
             let islandStartInside = false
             let islandEndInside = false
             let startFoundInX = 0
@@ -562,8 +539,6 @@ export function getIslands(data, variables = ['A', 'B', 'C', 'D']) {
             for (let position of positionsOfNewArray) {
               let x = position[0]
               let y = position[1]
-              console.log('x: ', x)
-              console.log('y: ', y)
               if (island.start.x == x && island.start.y == y) {
                 islandStartInside = true
                 startFoundInX = x
