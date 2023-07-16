@@ -47,10 +47,47 @@ export function getVisited(island, visited) {
     }
   }
   if (island.corner === 'corner') {
-    visited[0][0] = true
-    visited[3][0] = true
-    visited[0][3] = true
-    visited[3][3] = true
+    let startx = 0,
+      starty = 0
+    switch (island.table) {
+      case 1:
+        startx = 0
+        starty = 4
+        break
+      case 2:
+        startx = 4
+        starty = 0
+        break
+      case 3:
+        startx = 4
+        starty = 4
+        break
+
+      default:
+        startx = 0
+        starty = 0
+        break
+    }
+    visited[0 + startx][0 + starty] = true
+    visited[3 + startx][0 + starty] = true
+    visited[0 + startx][3 + starty] = true
+    visited[3 + startx][3 + starty] = true
+    if (island.endTable) {
+      const endCoordinates = [
+        { endx: 0, endy: 4 },
+        { endx: 4, endy: 0 },
+        { endx: 4, endy: 4 }
+      ]
+      let endx, endy
+      for (let i = 1; i <= island.endTable; i++) {
+        endx = endCoordinates[i - 1].endx
+        endy = endCoordinates[i - 1].endy
+        visited[0 + endx][0 + endy] = true
+        visited[3 + endx][0 + endy] = true
+        visited[0 + endx][3 + endy] = true
+        visited[3 + endx][3 + endy] = true
+      }
+    }
   }
   return visited
 }

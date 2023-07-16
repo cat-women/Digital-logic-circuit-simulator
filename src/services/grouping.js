@@ -121,6 +121,12 @@ function createBooleanFunction(
 
     /** For six variable add msb variable  */
     if (rowElement.length === 3) {
+      if (!island.msbChange) {
+        if (island.table === 0 || island.table === 1)
+          output += rowElement[0] + "'"
+        if (island.table === 2 || island.table === 3) output += rowElement[0]
+      }
+      // if table changes
       if (!island.msbChange || island.endTable) {
         if (island.table === 0 && island.endTable === 1)
           output += rowElement[0] + "'"
@@ -167,6 +173,12 @@ function createBooleanFunction(
 
     /** For six variable add msb variable  */
     if (colElement.length === 3) {
+      if (!island.msbChange) {
+        if (island.table === 0 || island.table === 2)
+          output += colElement[0] + "'"
+        if (island.table === 1 || island.table === 3) output += colElement[0]
+      }
+      // if table changes
       if (!island.msbChange || island.endTable) {
         if (island.table === 0 && island.endTable === 2)
           output += colElement[0] + "'"
