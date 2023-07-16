@@ -278,7 +278,6 @@ function grouping(kMap, row, col, tableIndex) {
 
   // corner grouping
   // for more than 4 variable
-
   let isZero = kMap.some(row => row.some(element => element === 0))
   if (row + col > 7 && isZero) {
     // For Row  Corner Grouping
@@ -367,6 +366,22 @@ function grouping(kMap, row, col, tableIndex) {
       }
       if (isLargest) break
     }
+
+    // Corner grouping
+    console.log(
+      'condition one',
+      kMap[0][0] === 1,
+      kMap[0][3] === 1,
+      kMap[3][0] === 1,
+      kMap[3][3] === 1
+    )
+    if (
+      kMap[0][0] === 1 &&
+      kMap[0][3] === 1 &&
+      kMap[3][0] === 1 &&
+      kMap[3][3] === 1
+    )
+      makeIslandObject(0, 0, 3, 3, tableIndex, 4, 'corner')
   }
 
   // for three variable
@@ -401,7 +416,6 @@ function grouping(kMap, row, col, tableIndex) {
   colIslands = removeRedundant(colIslands, row, col)
 
   islands = removeRedundantIslands(islands, row, col, kMap)
-  console.log('initial islands', islands)
   // remove redundant rowislands and colislands
   if (cornerIslands.length > 0) {
     rowIslands = rowIslands.filter(island => {
@@ -568,13 +582,13 @@ export function getIslands(data, variables = ['A', 'B', 'C', 'D']) {
             }
           } else {
             // check if newArray is inside island
-            let positionsOfIsland = []
-            for (let k = island.start.x; k < island.end.x; k++) {
-              for (let l = island.start.y; island.end.y; j++) {
-                positionsOfIsland.push([k, l])
-              }
-            }
-            console.log('positionsOfIsland: ', positionsOfIsland)
+            // let positionsOfIsland = []
+            // for (let k = island.start.x; k < island.end.x; k++) {
+            //   for (let l = island.start.y; island.end.y; j++) {
+            //     positionsOfIsland.push([k, l])
+            //   }
+            // }
+            // console.log('positionsOfIsland: ', positionsOfIsland)
           }
         }
         if (!found) {
@@ -583,7 +597,7 @@ export function getIslands(data, variables = ['A', 'B', 'C', 'D']) {
       })
     })
     islands = newArray
-  } else islands = grouping(kMap, row, col)
+  } else islands = grouping(kMap, row, col, 0)
 
   if (islands.length === 0) return '0'
   islands.sort((a, b) => b.area - a.area)
