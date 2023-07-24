@@ -56,20 +56,33 @@ function createBooleanFunction(
 
     for (let j = island.start.y; j <= island.end.y; j++) {
       for (let i = island.start.x; i <= island.end.x; i++) {
+        // for first table
         if (island.table === 0 && visited[j][i] === false) {
           visited[j][i] = true
           flag = true
         }
 
-        if (island.table === 1 && visited[j][i + 4] === false) {
+        // for second table
+        if (
+          ((island.endTable && island.endTable === 1) || island.table === 1) &&
+          visited[j][i + 4] === false
+        ) {
           visited[j][i + 4] = true
           flag = true
         }
-        if (island.table === 2 && visited[j + 4][i] === false) {
+        // Second table
+        if (
+          ((island.endTable && island.endTable === 2) || island.table === 2) &&
+          visited[j + 4][i] === false
+        ) {
           visited[j + 4][i] = true
           flag = true
         }
-        if (island.table === 3 && visited[j + 4][i + 4] === false) {
+        // Third table
+        if (
+          ((island.endTable && island.endTable === 3) || island.table === 3) &&
+          visited[j + 4][i + 4] === false
+        ) {
           visited[j + 4][i + 4] = true
           flag = true
         }
@@ -487,6 +500,15 @@ function createSubArray(kMap) {
   return subArrays
 }
 
+function isIslandsSame(island1, island2) {
+  return (
+    island1.start.x === island2.start.x &&
+    island1.start.y === island2.start.y &&
+    island1.end.x === island2.end.x &&
+    island1.end.y === island2.end.y &&
+    island1.corner === island2.corner
+  )
+}
 export function getIslands(data, variables = ['A', 'B', 'C', 'D']) {
   let kMap = data.kMapValue
   const colElement = data.colElement
@@ -515,26 +537,71 @@ export function getIslands(data, variables = ['A', 'B', 'C', 'D']) {
 
     let newArray = []
     totalIslands.forEach((islands, index) => {
-      islands.forEach(island => {
+      islands.forEach((island, subIndex) => {
         let found = false
-
         for (let j = 0; j < newArray.length; j++) {
-          if (
-            island.start.x === newArray[j].start.x &&
-            island.start.y === newArray[j].start.y &&
-            island.end.x === newArray[j].end.x &&
-            island.end.y === newArray[j].end.y &&
-            island.corner === newArray[j].corner
-          ) {
-            found = true
-            newArray[j].area += island.area
-            newArray[j].table = newArray[j].table
-            newArray[j].endTable = island.table
-            newArray[j].msbChange = true
-            break
+         
+          if (isIslandsSame(island, newArray[j])) {
+            // condition for table not grouping
+            // 1. dont groupt table 0 and three
+            if (
+              newArray[j].table === 0 &&
+              !newArray[j].endTable &&
+              island.table === 3
+            )
+              break
+
+            // 2. dont group table 1 and 2
+            if (
+              newArray[j].table === 1 &&
+              !newArray[j].endTable &&
+              island.table === 2
+            )
+              break
+
+
+            // Either make group of four table or remove
+            if (
+              island.table === 2 &&
+              newArray[j].endTable &&
+              newArray[j].endTable === 1 &&
+              index + 1 < totalIslands.length
+            ) {
+              let isSame = totalIslands[index + 1].some(land =>
+                isIslandsSame(island, land)
+              )
+              if (isSame) {
+                found = true
+                newArray[j].endTable = 3
+                newArray[j].area *= 2
+                newArray.msbChange = true
+                index++
+                break
+              } else {
+                island.endTable = 2
+                island.msbChange = true
+                island.table = 0
+                found = false
+                newArray[newArray.length] = island
+                break
+              }
+            }
+            if (island.table === 3 && !newArray[j].endTable) {
+              found = true
+              newArray[j].area += island.area
+              newArray[j].endTable = island.table
+              newArray[j].msbChange = true
+            } else {
+              found = true
+              newArray[j].area += island.area
+              newArray[j].endTable = island.table
+              newArray[j].msbChange = true
+              break
+            }
           }
 
-          if (newArray[j].area > island.area) {
+          // if table is inside another table  16,17,18,19,20,21
+          if (newArray[j].area > island.area && !newArray[j].endTable) {
             // check if island is inside newArray
             let positionsOfNewArray = []
             for (let k = newArray[j].start.x; k <= newArray[j].end.x; k++) {
@@ -565,17 +632,10 @@ export function getIslands(data, variables = ['A', 'B', 'C', 'D']) {
             if (islandStartInside && islandEndInside) {
               island.area = island.area * 2
               island.msbChange = true
+              island.endTable = island.table
+              island.table = newArray[j].table
               break
             }
-          } else {
-            // check if newArray is inside island
-            // let positionsOfIsland = []
-            // for (let k = island.start.x; k < island.end.x; k++) {
-            //   for (let l = island.start.y; island.end.y; j++) {
-            //     positionsOfIsland.push([k, l])
-            //   }
-            // }
-            // console.log('positionsOfIsland: ', positionsOfIsland)
           }
         }
         if (!found) {
