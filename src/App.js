@@ -5,8 +5,12 @@ import CssBaseline from '@mui/material/CssBaseline'
 import Toolbar from '@mui/material/Toolbar'
 import TextField from '@mui/material/TextField'
 import InputLabel from '@mui/material/InputLabel'
-import { useSelector } from 'react-redux'
+import { useSelector,useDispatch } from 'react-redux'
 import Grid from '@mui/material/Grid'
+import Button from '@mui/material/Button'
+import Modal from '@mui/material/Modal'
+import Typography from '@mui/material/Typography'
+
 import './App.css'
 
 /** Components imports */
@@ -16,14 +20,24 @@ import SideNavbar from './components/sideNavbar/SideNavbar.js'
 import SOP from './components/SOP.js'
 import Form from './components/Form.js'
 import useStyles from './styles'
+import AuthModal from './components/auth/form'
+import {signOut } from './actions/auth';
 
 function App() {
-  const [mobileOpen, setMobileOpen] = useState(false)
-  const [variables, setvariables] = useState(['A', 'B'])
-  const [expression, setExpression] = useState([0,1])
   const classes = useStyles()
+  const dispatch = useDispatch()
+  const [mobileOpen, setMobileOpen] = useState(false)
+  const [open, setOpen] = React.useState(false)
+  const handleOpen = () => setOpen(true)
+  const handleClose = () => setOpen(false)
+
+  const [variables, setvariables] = useState(['A', 'B'])
+  const [expression, setExpression] = useState([0, 1])
   const drawerWidth = 240
   const functionalExp = useSelector(state => state.funcExp)
+  const user = JSON.parse(sessionStorage.getItem('user'))
+
+  
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen)
   }
@@ -50,13 +64,34 @@ function App() {
             ml: { sm: `${drawerWidth}px` }
           }}
         >
-          <Toolbar>
+          <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
             <Form handleExpression={handleExpression} variables={variables} />
-            <InputLabel sx={{ marginLeft: '129px' }}>Expression :</InputLabel>
+            <div>
+              <InputLabel sx={{ marginLeft: '129px' }}>Expression :</InputLabel>
 
-            <InputLabel sx={{ marginLeft: '129px', color: 'red' }}>
-              {functionalExp.exp}{' '}
-            </InputLabel>
+              <InputLabel sx={{ marginLeft: '129px', color: 'red' }}>
+                {functionalExp.exp}{' '}
+              </InputLabel>
+            </div>
+            { user ?
+              <Typography sx={{ color :"black"}}>Hello  {user?.data.username} </Typography>:
+              <Typography sx={{ color :"black"}}>Login to save your solution</Typography>
+              
+              }
+              {user ? <Button onClick={()=> signOut()}>Logout </Button> :
+                      <Button onClick={handleOpen}>Login </Button>
+              }
+              
+            <Modal
+              open={open}
+              onClose={handleClose}
+              aria-labelledby="modal-modal-title"
+              aria-describedby="modal-modal-description"
+            >
+              <Box className={classes.modalBox}>
+                <AuthModal setOpen={setOpen} />
+              </Box>
+            </Modal>
           </Toolbar>
         </AppBar>
 

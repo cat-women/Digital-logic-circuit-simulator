@@ -8,7 +8,7 @@ function Home() {
 
   return (
     <Paper className={classes.container}>
-      <h4>this is me </h4>
+      <h4>Digital logic circuit similator</h4>
       <TextField
         id="outlined-basic"
         label="Outlined"
