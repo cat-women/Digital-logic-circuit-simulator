@@ -1,11 +1,11 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import CssBaseline from '@mui/material/CssBaseline'
 import Toolbar from '@mui/material/Toolbar'
 import TextField from '@mui/material/TextField'
 import InputLabel from '@mui/material/InputLabel'
-import { useSelector,useDispatch } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import Grid from '@mui/material/Grid'
 import Button from '@mui/material/Button'
 import Modal from '@mui/material/Modal'
@@ -21,13 +21,17 @@ import SOP from './components/SOP.js'
 import Form from './components/Form.js'
 import useStyles from './styles'
 import AuthModal from './components/auth/form'
-import {signOut } from './actions/auth';
+import Result from './components/results'
 
-function App() {
+import { signOut } from './actions/auth'
+import { getResult, addResult } from './actions/result'
+
+function App () {
   const classes = useStyles()
   const dispatch = useDispatch()
   const [mobileOpen, setMobileOpen] = useState(false)
-  const [open, setOpen] = React.useState(false)
+  const [open, setOpen] = useState(false)
+
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
 
@@ -37,27 +41,34 @@ function App() {
   const functionalExp = useSelector(state => state.funcExp)
   const user = JSON.parse(sessionStorage.getItem('user'))
 
-  
+  useEffect(() => {
+    dispatch(getResult())
+  })
+
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen)
   }
 
   const handleExpression = newExp => {
     setExpression(newExp)
+    if (user && functionalExp.exp.length) {
+      addResult({ input: expression, expression: functionalExp })
+    }
   }
 
   const handleVariable = newVariable => {
     setvariables(newVariable)
   }
-  if (expression.length > Math.pow(2, variables.length))
+  if (expression.length > Math.pow(2, variables.length)) {
     alert('Expression length exceed for given variable')
+  }
   return (
-    <div className="App">
+    <div className='App'>
       <Box sx={{ display: 'flex' }}>
         <CssBaseline />
         {/** Header line  */}
         <AppBar
-          position="fixed"
+          position='fixed'
           sx={{
             background: 'white',
             width: { sm: `calc(100% - ${drawerWidth}px)` },
@@ -73,20 +84,22 @@ function App() {
                 {functionalExp.exp}{' '}
               </InputLabel>
             </div>
-            { user ?
-              <Typography sx={{ color :"black"}}>Hello  {user?.data.username} </Typography>:
-              <Typography sx={{ color :"black"}}>Login to save your solution</Typography>
-              
-              }
-              {user ? <Button onClick={()=> signOut()}>Logout </Button> :
-                      <Button onClick={handleOpen}>Login </Button>
-              }
-              
+            {user
+              ? <Typography sx={{ color: 'black' }}>
+                  Hello {user.data.username}{' '}
+              </Typography>
+              : <Typography sx={{ color: 'black' }}>
+                  Login to save your solution
+                </Typography>}
+            {user
+              ? <Button onClick={() => signOut()}>Logout </Button>
+              : <Button onClick={handleOpen}>Login </Button>}
+
             <Modal
               open={open}
               onClose={handleClose}
-              aria-labelledby="modal-modal-title"
-              aria-describedby="modal-modal-description"
+              aria-labelledby='modal-modal-title'
+              aria-describedby='modal-modal-description'
             >
               <Box className={classes.modalBox}>
                 <AuthModal setOpen={setOpen} />
@@ -97,19 +110,15 @@ function App() {
 
         {/** Sidenavbar */}
         <Box
-          component="nav"
+          component='nav'
           sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-          aria-label="mailbox folders"
+          aria-label='mailbox folders'
         >
-          {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
           <SideNavbar
-            variant="temporary"
-            open={
-              mobileOpen // container={container}
-            }
+            variant='temporary'
+            open={mobileOpen}
             onClose={handleDrawerToggle}
-            ModalProps={{ keepMounted: true } // Better open performance on mobile.
-            }
+            ModalProps={{ keepMounted: true }}
             sx={{
               display: { xs: 'block', sm: 'none' },
               '& .MuiDrawer-paper': {
@@ -121,7 +130,7 @@ function App() {
           />
         </Box>
         <Box
-          component="main"
+          component='main'
           sx={{
             flexGrow: 1,
             p: 3,
@@ -138,8 +147,7 @@ function App() {
             </Grid>
           </Grid>
           <SOP variables={variables} />
-
-          {/* <Project /> */}
+          <Result />
         </Box>
       </Box>
     </div>

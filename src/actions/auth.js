@@ -1,8 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
-import axios from 'axios'
-
-const url = 'http://localhost:8000/'
-axios.defaults.baseURL = url
+import config from './config'
+const axios = config()
 
 export const signUp = async data => {
   try {
@@ -19,8 +17,8 @@ export const signIn = createAsyncThunk('auth', async (data, thunkAPI) => {
     const resp = await axios.post('user/signin', data)
     console.log(resp)
     if (resp.data) {
-      localStorage.setItem('user', JSON.stringify(resp.data))
       sessionStorage.setItem('user', JSON.stringify(resp.data))
+      localStorage.setItem('user', JSON.stringify(resp.data))
     }
     return resp.data
   } catch (error) {

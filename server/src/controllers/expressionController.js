@@ -2,15 +2,15 @@ const Expression = require('../models/expression.js')
 
 class ExpressionController {
   add = async (req, res, next) => {
-    const { userId, input, expression } = req.body
-
+    const { input, expression } = req.body
+    const user = req.user
     try {
-      await User.create({
-        userId,
-        input,
-        expression
+      const result = await Expression.create({
+        userId: user.id,
+        input: JSON.stringify(input),
+        expression: JSON.stringify(expression)
       })
-
+      console.log(result)
       return res.status(200).json({ msg: 'expression added' })
     } catch (error) {
       console.log(error)
