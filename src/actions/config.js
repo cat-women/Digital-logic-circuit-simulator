@@ -10,3 +10,8 @@ export default function config () {
   }
   return axios
 }
+
+export function clearSession () {
+  localStorage.removeItem('user')
+  sessionStorage.removeItem('user')
+}

@@ -1,4 +1,5 @@
 const Expression = require('../models/expression.js')
+const mongoose = require('mongoose')
 
 class ExpressionController {
   add = async (req, res, next) => {
@@ -10,7 +11,6 @@ class ExpressionController {
         input: JSON.stringify(input),
         expression: JSON.stringify(expression)
       })
-      console.log(result)
       return res.status(200).json({ msg: 'expression added' })
     } catch (error) {
       console.log(error)
@@ -28,12 +28,11 @@ class ExpressionController {
     }
   }
   delete = async (req, res, next) => {
-    const { _id } = req.body
     try {
-      const exp = await User.findById(_id)
+      const exp = await Expression.findById(req.params.id)
       if (!exp)
         return res.status(404).json({ msg: 'Expression does not exist' })
-      await exp.revove()
+      await exp.remove()
 
       res.status(200).json({ msg: 'Expression deleted' })
     } catch (error) {
@@ -43,15 +42,16 @@ class ExpressionController {
   }
 
   deleteAll = async (req, res, next) => {
-    const { userId } = req.body
+    const userId = mongoose.Types.ObjectId(req.user.id)
+
     try {
-      const exps = await User.find({ userId })
+      const exps = await Expression.find({ userId })
 
       if (exps.length === 0) {
         return res.status(404).json({ msg: 'Expressions do not exist' })
       }
 
-      await User.deleteMany({ userId })
+      await Expression.deleteMany({ userId })
 
       res.status(200).json({ msg: 'Expressions deleted' })
     } catch (error) {

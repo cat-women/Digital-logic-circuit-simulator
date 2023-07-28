@@ -27,7 +27,7 @@ export const signIn = createAsyncThunk('auth', async (data, thunkAPI) => {
   }
 })
 
-export const signOut = createAsyncThunk('auth', async () => {
+export const signOut = () => {
   localStorage.removeItem('user')
   sessionStorage.removeItem('user')
-})
+}

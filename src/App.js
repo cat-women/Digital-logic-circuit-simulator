@@ -39,11 +39,13 @@ function App () {
   const [expression, setExpression] = useState([0, 1])
   const drawerWidth = 240
   const functionalExp = useSelector(state => state.funcExp)
-  const user = JSON.parse(sessionStorage.getItem('user'))
+  const [user, setUser] = useState(JSON.parse(sessionStorage.getItem('user')))
+
+  let results = useSelector(state => state.results)
 
   useEffect(() => {
     dispatch(getResult())
-  })
+  }, [])
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen)
@@ -147,7 +149,7 @@ function App () {
             </Grid>
           </Grid>
           <SOP variables={variables} />
-          <Result />
+          <Result results={results} />
         </Box>
       </Box>
     </div>

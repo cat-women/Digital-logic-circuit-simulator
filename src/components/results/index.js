@@ -1,4 +1,4 @@
-import * as React from 'react'
+import React, {useEffect} from 'react'
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
@@ -8,16 +8,34 @@ import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
 import Button from '@mui/material/Button'
 
-import { useSelector } from 'react-redux'
-import { deleteAll, deleteResult} from '../../actions/result'
+import { useSelector,useDispatch } from 'react-redux'
+import { deleteAll, deleteResult,getResult} from '../../actions/result'
 
-export default function Results() {
-  const results = useSelector(state => state.results)
+export default function Results(props) {  
+   let results = props.results
+   const dispatch = useDispatch()
+
+   console.log(results);
+
     const handleDelete =(id) =>{
-        const res = deleteResult(id)
-        console.log("delete",res);
+       deleteResult(id).then(res=>{
+        alert(res.data.msg)
+        dispatch(getResult())
+       }).catch(error=>{
+        alert("Delete failed")
+       })
+
     }
-  if (results.isLoading) return
+
+    const clear = () =>{
+      deleteAll().then(res=>{
+        alert(res.data.msg)
+        dispatch(getResult())
+       }).catch(error=>{
+        alert("Delete failed")
+       })
+    }
+  if (results.isLoading || !results.data.length) return
 
   return (
     <TableContainer component={Paper} sx={{ maxWidth: 550 }}>
@@ -48,8 +66,14 @@ export default function Results() {
                 {JSON.parse(result.expression).exp}
               </TableCell>
               <TableCell align="right"> <Button sx={{color:"red"} } onClick={(e)=>handleDelete(result._id)}>Delete </Button></TableCell>
-            </TableRow>
+            </TableRow>         
           )}
+             <TableRow> 
+               <TableCell align="right"> 
+                  <Button sx={{color:"red"} } onClick={(e)=>clear()}>Delete All 
+                  </Button>
+                </TableCell>
+            </TableRow>
         </TableBody>
       </Table>
     </TableContainer>

@@ -19,7 +19,7 @@ import { signIn, signUp } from "../../actions/auth";
 
 const Form = (props) => {
   const classess = makeStyles();
-  const [isSignUp, setIsSignUp] = useState(true);
+  const [isSignUp, setIsSignUp] = useState(false);
   const [formData, setformData] = useState({});
   const [error, setError] = useState(false);
   const dispatch = useDispatch();

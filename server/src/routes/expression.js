@@ -6,7 +6,7 @@ const router = express.Router()
 
 router.post('/', authUser, exp.add)
 router.delete('/:id', authUser, exp.delete)
-router.delete('/', authUser, exp.deleteAll)
+router.delete('/all', authUser, exp.deleteAll)
 router.get('/', authUser, exp.getAll)
 
 module.exports = router
