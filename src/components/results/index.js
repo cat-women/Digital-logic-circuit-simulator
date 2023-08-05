@@ -7,7 +7,7 @@ import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
 import Button from '@mui/material/Button'
-
+import Typography from '@mui/material/Typography'
 import { useSelector,useDispatch } from 'react-redux'
 import { deleteAll, deleteResult,getResult} from '../../actions/result'
 
@@ -38,6 +38,8 @@ export default function Results(props) {
   if (results.isLoading || !results.data.length) return
 
   return (
+    <div >
+      <Typography variant="h4">Solutions</Typography>
     <TableContainer component={Paper} sx={{ maxWidth: 550 }}>
       <Table aria-label="simple table">
         <TableHead>
@@ -77,5 +79,6 @@ export default function Results(props) {
         </TableBody>
       </Table>
     </TableContainer>
+  </div>
   )
 }

@@ -10,7 +10,7 @@ import Grid from '@mui/material/Grid'
 import Button from '@mui/material/Button'
 import Modal from '@mui/material/Modal'
 import Typography from '@mui/material/Typography'
-
+import Divider from '@mui/material/Divider'
 import './App.css'
 import Context from './context'
 
@@ -156,8 +156,16 @@ function App () {
                 <Kmap variables={variables} expression={expression} />
               </Grid>
             </Grid>
-            <SOP variables={variables} />
-            <Result results={results} />
+            <Divider sx={{ marginTop: '90px' }} />
+            <Grid container>
+              <Grid item xs={8}>
+                <Typography variant='h4'>Circuit</Typography>
+                <SOP variables={variables} />
+              </Grid>
+              <Grid item xs={4}>
+                <Result results={results} />
+              </Grid>
+            </Grid>
           </Box>
         </Box>
       </Context.Provider>

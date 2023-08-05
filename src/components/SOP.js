@@ -31,15 +31,15 @@ const DiagramComponent = props => {
     [exp]
   )
 
-  function createCircuit() {
+  function createCircuit () {
     const graph = new dia.Graph()
     new dia.Paper({
       el: diagramRef.current,
       model: graph,
       width: 1000,
-      height: 1500,
+      height: 1200,
       background: {
-        color: 'rgba(255, 255, 255, 0.3)'
+        color: 'rgba(255, 255, 255, 0.8)'
       }
     })
     const parts = exp.split(' + ')
@@ -70,7 +70,7 @@ const DiagramComponent = props => {
             }
             i++
           }
-          elements.push(gate ? gate : input)
+          elements.push(gate || input)
         }
         y += 100
       }
