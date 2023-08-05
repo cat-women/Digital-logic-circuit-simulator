@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useDispatch } from "react-redux";
 
 import {
@@ -16,12 +16,15 @@ import {
 
 import makeStyles from "./styles.js";
 import { signIn, signUp } from "../../actions/auth";
+import Context  from "../../context"
 
 const Form = (props) => {
   const classess = makeStyles();
   const [isSignUp, setIsSignUp] = useState(false);
   const [formData, setformData] = useState({});
   const [error, setError] = useState(false);
+  const { user, setUser } = useContext(Context)
+
   const dispatch = useDispatch();
 
   const handleChange = e => {
@@ -52,6 +55,7 @@ const Form = (props) => {
         setIsSignUp(false)
     } else {
       dispatch(signIn(formData))
+      setUser(JSON.parse(sessionStorage.getItem('user')))
       props.setOpen(false)
     };
   };
