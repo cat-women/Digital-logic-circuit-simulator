@@ -20,6 +20,9 @@ class ExpressionController {
   getAll = async (req, res, next) => {
     const userId = req.user.id
     try {
+      if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+        return res.status(401).json({ msg: "Not authorized" });
+      }
       const exps = await Expression.find({ userId })
       res.status(200).json(exps)
     } catch (error) {
@@ -29,6 +32,7 @@ class ExpressionController {
   }
   delete = async (req, res, next) => {
     try {
+      const id = parseInt(req.params.id)
       const exp = await Expression.findById(req.params.id)
       if (!exp)
         return res.status(404).json({ msg: 'Expression does not exist' })
@@ -41,22 +45,24 @@ class ExpressionController {
     }
   }
 
-  deleteAll = async (req, res, next) => {
-    const userId = mongoose.Types.ObjectId(req.user.id)
+  clearAll = async (req, res, next) => {
+    const userId = req.user.id;
 
     try {
-      const exps = await Expression.find({ userId })
-
-      if (exps.length === 0) {
-        return res.status(404).json({ msg: 'Expressions do not exist' })
+      if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+        return res.status(401).json({ msg: "Not authorized" });
       }
 
-      await Expression.deleteMany({ userId })
+      const exps = await Expression.find({ userId });
+      if (!exps.length) {
+        return res.status(404).json({ msg: 'Expressions do not exist' });
+      }
+      await Expression.deleteMany({ userId });
 
-      res.status(200).json({ msg: 'Expressions deleted' })
+      res.status(200).json({ msg: 'Expressions deleted' });
     } catch (error) {
-      console.log(error)
-      next(error)
+      console.log(error);
+      next(error);
     }
   }
 }

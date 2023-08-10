@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 
 import {
@@ -8,22 +8,17 @@ import {
   Grid,
   Input,
   Button,
-  FormControl,
-  FormControlLabel,
-  RadioGroup,
-  Radio
 } from "@material-ui/core";
 
 import makeStyles from "./styles.js";
 import { signIn, signUp } from "../../actions/auth";
-import Context  from "../../context"
 
 const Form = (props) => {
   const classess = makeStyles();
   const [isSignUp, setIsSignUp] = useState(false);
   const [formData, setformData] = useState({});
   const [error, setError] = useState(false);
-  const { user, setUser } = useContext(Context)
+
 
   const dispatch = useDispatch();
 
@@ -42,21 +37,21 @@ const Form = (props) => {
       setError(false);
     }
   };
-
   const handleSubmit = async e => {
     e.preventDefault();
     if (isSignUp) {
       let res = await signUp(formData)
       console.log(res);
-      if(res.msg !=="User created"){
+      if (res.msg !== "User created") {
         setIsSignUp(true)
         alert(res.msg)
-      }else
+      } else
         setIsSignUp(false)
     } else {
-      dispatch(signIn(formData))
-      setUser(JSON.parse(sessionStorage.getItem('user')))
+      const res = await dispatch(signIn(formData))
       props.setOpen(false)
+      props.setUser(JSON.parse(sessionStorage.getItem('user')))
+
     };
   };
 
@@ -69,23 +64,23 @@ const Form = (props) => {
         <form className={classess.form} onSubmit={handleSubmit}>
           <Grid className={classess.input}>
             {isSignUp &&
-            <>
-              <Input
-                name="firstName"
-                placeholder="First Name"
-                onChange={handleChange}
-                autoFocus
-                className={classess.input}
-              />
-              <Input
-                name="lastName"
-                placeholder="Last Name"
-                onChange={handleChange}
-                autoFocus
-                className={classess.input}
-              />
+              <>
+                <Input
+                  name="firstName"
+                  placeholder="First Name"
+                  onChange={handleChange}
+                  autoFocus
+                  className={classess.input}
+                />
+                <Input
+                  name="lastName"
+                  placeholder="Last Name"
+                  onChange={handleChange}
+                  autoFocus
+                  className={classess.input}
+                />
               </>
-              }
+            }
 
             <Input
               name="email"
@@ -115,7 +110,7 @@ const Form = (props) => {
               <span style={{ color: "red" }}>
                 Password does not matched !{" "}
               </span>}
-           
+
             {isSignUp &&
               <Input
                 name="username"
@@ -124,7 +119,7 @@ const Form = (props) => {
                 autoFocus
                 className={classess.input}
               />}
-           
+
           </Grid>
           <Grid className={classess.footer1}>
             <Button className={classess.btnSubmit} type="submit">

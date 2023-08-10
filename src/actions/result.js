@@ -20,7 +20,7 @@ export const getResult = createAsyncThunk('results', async thunkAPI => {
   let axios = config()
   try {
     const resp = await axios.get('exp')
-    console.log(resp.data)
+    console.log("in action",resp.data)
     return resp.data
   } catch (error) {
     if (error.response.status === 401) clearSession()
@@ -43,7 +43,7 @@ export const deleteResult = async id => {
 
 export const deleteAll = async () => {
   try {
-    const resp = await axios.delete(`exp/all`)
+    const resp = await axios.delete(`exp`)
     return resp.data
   } catch (error) {
     if (error.response.status === 401) clearSession()

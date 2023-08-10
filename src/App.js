@@ -27,7 +27,7 @@ import Result from './components/results'
 import { signOut } from './actions/auth'
 import { getResult, addResult } from './actions/result'
 
-function App () {
+function App() {
   const classes = useStyles()
   const dispatch = useDispatch()
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -40,13 +40,18 @@ function App () {
   const [expression, setExpression] = useState([0, 1])
   const drawerWidth = 240
   const functionalExp = useSelector(state => state.funcExp)
-  const [user, setUser] = useState(JSON.parse(sessionStorage.getItem('user')))
-
-  let results = useSelector(state => state.results)
+  const [user, setUser] = useState(null)
 
   useEffect(() => {
     dispatch(getResult())
+  })
+
+  useEffect(() => {
+    const loggedUser = JSON.parse(sessionStorage.getItem('user'))
+    if (loggedUser)
+      setUser(loggedUser)
   }, [])
+
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen)
@@ -96,14 +101,14 @@ function App () {
               </div>
               {user
                 ? <Typography sx={{ color: 'black' }}>
-                    Hello {user.data.username}{' '}
+                  Hello {user.data.username}{' '}
                 </Typography>
                 : <Typography sx={{ color: 'black' }}>
-                    Login to save your solution
-                  </Typography>}
+                  Login to save your solution
+                </Typography>}
               {user
                 ? <Button onClick={() => handleSignout()}>Logout </Button>
-                : <Button onClick={handleOpen}>Login </Button>}
+                : <Button onClick={handleOpen}  >Login </Button>}
 
               <Modal
                 open={open}
@@ -112,7 +117,7 @@ function App () {
                 aria-describedby='modal-modal-description'
               >
                 <Box className={classes.modalBox}>
-                  <AuthModal setOpen={setOpen} />
+                  <AuthModal setOpen={setOpen} setUser={setUser} />
                 </Box>
               </Modal>
             </Toolbar>
@@ -162,8 +167,10 @@ function App () {
                 <Typography variant='h4'>Circuit</Typography>
                 <SOP variables={variables} />
               </Grid>
-              <Grid item xs={4}>
-                <Result results={results} />
+            </Grid>
+            <Grid container>
+              <Grid item xs={8}>
+                <Result />
               </Grid>
             </Grid>
           </Box>

@@ -15,8 +15,8 @@ export const signUp = async data => {
 export const signIn = createAsyncThunk('auth', async (data, thunkAPI) => {
   try {
     const resp = await axios.post('user/signin', data)
-    console.log(resp)
-    if (resp.data) {
+    
+   if (resp.data) {
       sessionStorage.setItem('user', JSON.stringify(resp.data))
       localStorage.setItem('user', JSON.stringify(resp.data))
     }
