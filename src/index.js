@@ -8,15 +8,18 @@ import reportWebVitals from './reportWebVitals'
 
 import { Provider } from 'react-redux'
 import store from './store'
+import { MethodProvider } from './context'
 
 const root = ReactDOM.createRoot(document.getElementById('root'))
 root.render(
   <React.StrictMode>
     <Provider store={store}>
-      <App />
+      <MethodProvider>
+        <App />
+      </MethodProvider>
     </Provider>
   </React.StrictMode>
-)
+);
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

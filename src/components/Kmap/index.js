@@ -19,35 +19,29 @@ import {
   sixVariables
 } from '../../services/mapping'
 
-/**Material UI components */
-import { styled } from '@mui/material/styles'
-import Table from '@mui/material/Table'
-import TableBody from '@mui/material/TableBody'
-import TableCell, { tableCellClasses } from '@mui/material/TableCell'
-import TableContainer from '@mui/material/TableContainer'
-import TableHead from '@mui/material/TableHead'
-import TableRow from '@mui/material/TableRow'
-import Paper from '@mui/material/Paper'
 
-export default function Kmap(props) {
+import { useMethod } from '../../context'
+
+export default function Kmap({ variables, expression }) {
   const dispatch = useDispatch()
   const inputRef = useRef(null)
   const [positionalArray, setPositionalArray] = useState([])
+
+  const { method } = useMethod()
+
   // const [kMapValue, setKMapValue] = useState([])
 
   const classes = useStyles()
-  let variables = props.variables
-  let expression = props.expression
   let variableCount = variables.length
   let rowElement = variables.slice(0, Math.floor(variables.length / 2))
   let colElement = variables.slice(Math.floor(variables.length / 2))
   let rowElementBitSize = Math.pow(2, rowElement.length)
   let colElementBitSize = Math.pow(2, colElement.length)
-  const tableSize = Math.pow(2, variableCount)
 
-  const rowBits = []  
+  const rowBits = []
   const colBits = []
 
+  console.log("method in kamp", method)
   /** Set row can col bits  */
   for (let i = 0; i < rowElementBitSize; i++)
     rowBits.push(binaryToGray(decimalToBinary(i, rowElement.length)))
@@ -125,70 +119,73 @@ export default function Kmap(props) {
   return kMapValue.length < 1
     ? <h6> Kmap Table</h6>
     : <table border="1" className={classes.table}>
-        <thead>
-          <tr>
-            <th />
-            <th colSpan="5">
-              {colElement.map(key => key)}
+      <thead>
+        <tr>
+          <th />
+          <th colSpan="5">
+            {colElement.map(key => key)}
+          </th>
+        </tr>
+        <tr>
+          <th />
+          <th />
+          {colBits.map(bit =>
+            <th
+              key={bit}
+              className={` ${bit === 4 ? classes.doubleDarkBorder : ''}`}
+            >
+              {bit}
             </th>
-          </tr>
-          <tr>
-            <th />
-            <th />
-            {colBits.map(bit =>
-              <th
-                key={bit}
-                className={` ${bit === 4 ? classes.doubleDarkBorder : ''}`}
-              >
-                {bit}
+          )}
+        </tr>
+      </thead>
+      <tbody>
+        {rowBits.map((key, index) => {
+          return (
+            <tr key={index}>
+              {index === 0 &&
+                <th className={classes.td} rowSpan={rowElementBitSize}>
+                  {rowElement}
+                </th>}
+              <th className={classes.td}>
+                {key}
               </th>
-            )}
-          </tr>
-        </thead>
-        <tbody>
-          {rowBits.map((key, index) => {
-            return (
-              <tr key={index}>
-                {index === 0 &&
-                  <th className={classes.td} rowSpan={rowElementBitSize}>
-                    {rowElement}
-                  </th>}
-                <th className={classes.td}>
-                  {key}
-                </th>
 
-                {kMapValue[index].map((value, subIndex) => {
-                  return (
-                    <td
-                      className={`${classes.td} ${kMapValue[index][subIndex] ===
-                      0
-                        ? classes.tdGray
-                        : classes.tdGreen}
+              {kMapValue[index].map((value, subIndex) => {
+                return (
+                  <td
+                    className={`${classes.td}  ${isActive(kMapValue[index][subIndex], method)
+                      ? classes.tdGreen
+                      : classes.tdGray}
 
                         ${index === 4 ? classes.top : ''}
 
                         ${subIndex === 4 ? classes.left : ''}
   
                         `}
+                    key={subIndex}
+                  >
+                    <button
+                      className={`${classes.button} ${isActive(kMapValue[index][subIndex], method)
+                        ? classes.tdGreen
+                        : classes.tdGray}`}
                       key={subIndex}
+                      onClick={() => handleClick(index, subIndex)}
                     >
-                      <button
-                        className={`${classes.button} ${kMapValue[index][
-                          subIndex
-                        ] === 0
-                          ? classes.tdGray
-                          : classes.tdGreen}`}
-                        key={subIndex}
-                        onClick={() => handleClick(index, subIndex)}
-                      >
-                        {kMapValue[index][subIndex]}
-                      </button>
-                    </td>
-                  )
-                })}
-              </tr>
-            )
-          })}
-        </tbody>
-      </table>
+                      {method === 'pos' && (kMapValue[index][subIndex] === 1 ? 0 : 1)}
+                      {method === 'sop' && kMapValue[index][subIndex]}
+                    </button>
+                  </td>
+                )
+              })}
+            </tr>
+          )
+        })}
+      </tbody>
+    </table>
+}
+
+function isActive(value, method) {
+  if (value) return true
+  return false
 }

@@ -18,7 +18,13 @@ export default function TruthTable(props) {
   for (let i = 0; i < tableSize; i++) {
     truthTable.push(i)
     // functional value
-    expresion.includes(i) ? fValue.push(1) : fValue.push(0)
+    // for sop 
+    if (props.method === 'sop')
+      expresion.includes(i) ? fValue.push(1) : fValue.push(0)
+    if (props.method === 'pos')
+      expresion.includes(i) ? fValue.push(0) : fValue.push(1)
+
+
   }
   return (
     <div>
@@ -43,15 +49,28 @@ export default function TruthTable(props) {
                     {bit}
                   </td>
                 )}
-                <td
-                  key={index}
-                  td
-                  className={`${classes.td} ${fValue[index] === 0
-                    ? classes.tdGray
-                    : classes.tdGreen}`}
-                >
-                  {fValue[index]}
-                </td>
+                {/* if its in minterm i.e sop highlight 1 else if its in maxterm highlight 0 */}
+                {props.method === 'sop' ?
+                  <td
+                    key={index}
+                    td
+                    className={`${classes.td} ${fValue[index] === 0
+                      ? classes.tdGray
+                      : classes.tdGreen}`}
+                  >
+                    {fValue[index]}
+                  </td>
+                  :
+                  <td
+                    key={index}
+                    td
+                    className={`${classes.td} ${fValue[index] === 0
+                      ? classes.tdGreen
+                      : classes.tdGray}`}
+                  >
+                    {fValue[index]}
+                  </td>
+                }
               </tr>
             )
           })}

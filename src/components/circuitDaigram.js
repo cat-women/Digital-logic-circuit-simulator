@@ -7,11 +7,37 @@ import { getIslands } from '../services/grouping'
 import { createWire } from '../services/common'
 import { addFunctionalExp } from '../actions'
 
-const DiagramComponent = props => {
+
+function sopToPos(sop) {
+  let pos = ''
+  const terms = sop.split('+')
+  terms.map(t => {
+    pos += '('
+    let temp = ''
+    for (let i = 0; i < t.length; i++) {
+      temp += t[i]
+      t[i + 1] === `'` ? i++ : temp += `'`
+
+      if (i !== t.length - 1)
+        temp += '+'
+    }
+    pos += temp + ')'
+
+  })
+  return pos
+
+}
+const DiagramComponent = ({ variables, method }) => {
   const diagramRef = useRef(null)
   const { kMap, setkMap } = useSelector(state => state)
   const [exp, setExp] = useState('')
-  const variables = props.variables ? props.variables : ['A', 'B', 'C', 'D']
+  variables = variables ? variables : ['A', 'B', 'C', 'D']
+
+
+  //   For sop 
+  let primaryGate = (method === 'pos') ? 'and' : 'or'
+  let secondaryGate = (method === 'pos') ? "or" : 'and'
+
   const dispatch = useDispatch()
 
   useEffect(
@@ -31,7 +57,7 @@ const DiagramComponent = props => {
     [exp]
   )
 
-  function createCircuit () {
+  function createCircuit() {
     const graph = new dia.Graph()
     new dia.Paper({
       el: diagramRef.current,
@@ -52,14 +78,29 @@ const DiagramComponent = props => {
       let gate = null
       let wire = null
       let elements = []
+
       for (let i = 0; i < part.length; i++) {
         const el = part[i]
+
         if (variables.includes(el)) {
           gate = null
           input = createGates(el, x - 25, y).input
           graph.addCell(input)
 
-          if (part[i + 1] === `'`) {
+          // POS
+          if (method = 'pos' && part[i + 1] !== `'`) {
+            if (input) gate = createGates(`${input.id}not`, x + 100, y).not
+            else gate = createGates(`not`, x + 100, y).not
+            graph.addCell(gate)
+
+            if (input && gate) {
+              wire = createWire(input, gate)
+              graph.addCell(wire)
+            }
+          }
+
+          // SOP          
+          if (method === 'sop' && part[i + 1] === `'`) {
             if (input) gate = createGates(`${input.id}not`, x + 100, y).not
             else gate = createGates(`not`, x + 100, y).not
             graph.addCell(gate)
@@ -70,6 +111,7 @@ const DiagramComponent = props => {
             }
             i++
           }
+
           elements.push(gate || input)
         }
         y += 100
@@ -79,7 +121,7 @@ const DiagramComponent = props => {
         elements.forEach(element => {
           ids.push(element.id)
         })
-        gate = createGates(`${ids}`, x + 300, y - 150).and
+        gate = createGates(`${ids}`, x + 300, y - 150)[primaryGate]
         graph.addCell(gate)
 
         for (let i = 0; i < elements.length; i++) {
@@ -101,7 +143,7 @@ const DiagramComponent = props => {
     const keys = Object.keys(gates)
 
     if (keys.length > 1) {
-      const orGate = createGates('or', 700, 300).or
+      const orGate = createGates('or', 700, 300)[secondaryGate]
       graph.addCell(orGate)
 
       Object.values(gates).forEach(gate => {

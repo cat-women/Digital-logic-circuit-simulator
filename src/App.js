@@ -12,13 +12,13 @@ import Modal from '@mui/material/Modal'
 import Typography from '@mui/material/Typography'
 import Divider from '@mui/material/Divider'
 import './App.css'
-import Context from './context'
+import { useMethod } from './context'
 
 /** Components imports */
 import TruthTable from './components/truthTable'
 import Kmap from './components/Kmap'
 import SideNavbar from './components/sideNavbar/SideNavbar.js'
-import SOP from './components/SOP.js'
+import Diagram from './components/circuitDaigram.js'
 import Form from './components/Form.js'
 import useStyles from './styles'
 import AuthModal from './components/auth/form'
@@ -38,9 +38,18 @@ function App() {
 
   const [variables, setvariables] = useState(['A', 'B'])
   const [expression, setExpression] = useState([0, 1])
+
+  const { method, setMethod } = useMethod();
+
+  const handleMethod = (value) => {
+    setMethod(value)
+  }
+
   const drawerWidth = 240
   const functionalExp = useSelector(state => state.funcExp)
   const [user, setUser] = useState(null)
+
+  console.log("method in app.js", useMethod)
 
   useEffect(() => {
     dispatch(getResult())
@@ -71,111 +80,118 @@ function App() {
     signOut()
     setUser(null)
   }
+
+
+
+
   if (expression.length > Math.pow(2, variables.length)) {
     alert('Expression length exceed for given variable')
   }
   return (
     <div className='App'>
-      <Context.Provider value={{ user, setUser }}>
-        <Box sx={{ display: 'flex' }}>
-          <CssBaseline />
-          {/** Header line  */}
-          <AppBar
-            position='fixed'
+      <Box sx={{ display: 'flex' }}>
+        <CssBaseline />
+        {/** Header line  */}
+        <AppBar
+          position='fixed'
+          sx={{
+            background: 'white',
+            width: { sm: `calc(100% - ${drawerWidth}px)` },
+            ml: { sm: `${drawerWidth}px` }
+          }}
+        >
+          <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
+            <Form handleExpression={handleExpression} variables={variables} />
+            <div>
+              <InputLabel sx={{ marginLeft: '129px' }}>
+                Expression :
+              </InputLabel>
+
+              <InputLabel sx={{ marginLeft: '129px', color: 'red' }}>
+                {functionalExp.exp}{' '}
+              </InputLabel>
+            </div>
+            {user
+              ? <Typography sx={{ color: 'black' }}>
+                Hello {user.data.username}{' '}
+              </Typography>
+              : <Typography sx={{ color: 'black' }}>
+                Login to save your solution
+              </Typography>}
+            {user
+              ? <Button onClick={() => handleSignout()}>Logout </Button>
+              : <Button onClick={handleOpen}  >Login </Button>}
+
+            <Modal
+              open={open}
+              onClose={handleClose}
+              aria-labelledby='modal-modal-title'
+              aria-describedby='modal-modal-description'
+            >
+              <Box className={classes.modalBox}>
+                <AuthModal setOpen={setOpen} setUser={setUser} />
+              </Box>
+            </Modal>
+          </Toolbar>
+        </AppBar>
+
+        {/** Sidenavbar */}
+        <Box
+          component='nav'
+          sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+          aria-label='mailbox folders'
+        >
+          <SideNavbar
+            variant='temporary'
+            open={mobileOpen}
+            onClose={handleDrawerToggle}
+            ModalProps={{ keepMounted: true }}
             sx={{
-              background: 'white',
-              width: { sm: `calc(100% - ${drawerWidth}px)` },
-              ml: { sm: `${drawerWidth}px` }
+              display: { xs: 'block', sm: 'none' },
+              '& .MuiDrawer-paper': {
+                boxSizing: 'border-box',
+                width: drawerWidth
+              }
             }}
-          >
-            <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
-              <Form handleExpression={handleExpression} variables={variables} />
-              <div>
-                <InputLabel sx={{ marginLeft: '129px' }}>
-                  Expression :
-                </InputLabel>
-
-                <InputLabel sx={{ marginLeft: '129px', color: 'red' }}>
-                  {functionalExp.exp}{' '}
-                </InputLabel>
-              </div>
-              {user
-                ? <Typography sx={{ color: 'black' }}>
-                  Hello {user.data.username}{' '}
-                </Typography>
-                : <Typography sx={{ color: 'black' }}>
-                  Login to save your solution
-                </Typography>}
-              {user
-                ? <Button onClick={() => handleSignout()}>Logout </Button>
-                : <Button onClick={handleOpen}  >Login </Button>}
-
-              <Modal
-                open={open}
-                onClose={handleClose}
-                aria-labelledby='modal-modal-title'
-                aria-describedby='modal-modal-description'
-              >
-                <Box className={classes.modalBox}>
-                  <AuthModal setOpen={setOpen} setUser={setUser} />
-                </Box>
-              </Modal>
-            </Toolbar>
-          </AppBar>
-
-          {/** Sidenavbar */}
-          <Box
-            component='nav'
-            sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-            aria-label='mailbox folders'
-          >
-            <SideNavbar
-              variant='temporary'
-              open={mobileOpen}
-              onClose={handleDrawerToggle}
-              ModalProps={{ keepMounted: true }}
-              sx={{
-                display: { xs: 'block', sm: 'none' },
-                '& .MuiDrawer-paper': {
-                  boxSizing: 'border-box',
-                  width: drawerWidth
-                }
-              }}
-              handleVariable={handleVariable}
-            />
-          </Box>
-          <Box
-            component='main'
-            sx={{
-              flexGrow: 1,
-              p: 3,
-              width: { sm: `calc(100% - ${drawerWidth}px)` }
-            }}
-          >
-            <Toolbar />
-            <Grid container>
-              <Grid item xs={6}>
-                <TruthTable variables={variables} expression={expression} />
-              </Grid>
-              <Grid item xs={6}>
-                <Kmap variables={variables} expression={expression} />
-              </Grid>
-            </Grid>
-            <Divider sx={{ marginTop: '90px' }} />
-            <Grid container>
-              <Grid item xs={8}>
-                <Typography variant='h4'>Circuit</Typography>
-                <SOP variables={variables} />
-              </Grid>
-            </Grid>
-            <Grid container>
-              <Grid item xs={8}>
-                <Result />
-              </Grid>
-            </Grid>
-          </Box>
+            handleVariable={handleVariable}
+          />
         </Box>
-      </Context.Provider>
+        <Box
+          component='main'
+          sx={{
+            flexGrow: 1,
+            p: 3,
+            width: { sm: `calc(100% - ${drawerWidth}px)` }
+          }}
+        >
+          <Toolbar />
+          <Grid container style={{ marginLeft: '15px', padding: '20px' }}>
+            <Button onClick={(e) => handleMethod('pos')} style={{ background: method === 'pos' ? 'green' : '', color: 'black' }}>Maxterm</Button>
+            <Button onClick={(e) => handleMethod('sop')} style={{ background: method === 'sop' ? 'green' : '', color: 'black' }}>Minterm</Button>
+
+          </Grid>
+          <Grid container>
+            <Grid item xs={6}>
+              <TruthTable variables={variables} expression={expression} method="sop" />
+            </Grid>
+            <Grid item xs={6}>
+              <Kmap variables={variables} expression={expression} method="sop" />
+            </Grid>
+          </Grid>
+          <Divider sx={{ marginTop: '90px' }} />
+          <Grid container>
+            <Grid item xs={8}>
+              <Typography variant='h4'>Circuit</Typography>
+              <Diagram variables={variables} method='pos' />
+            </Grid>
+          </Grid>
+          <Grid container>
+            <Grid item xs={8}>
+              <Result />
+            </Grid>
+          </Grid>
+        </Box>
+      </Box>
     </div>
   )
 }

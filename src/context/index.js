@@ -1,5 +1,18 @@
-import { createContext } from 'react'
+import { createContext, useContext, useState } from 'react';
 
-const Context = createContext()
+const MethodContext = createContext();
 
-export default Context
+export const MethodProvider = ({ children }) => {
+     const [method, setMethod] = useState('sop');
+     const [user, setUser] = useState(null);
+
+     return (
+          <MethodContext.Provider value={{ method, setMethod, user, setUser }}>
+               {children}
+          </MethodContext.Provider>
+     );
+};
+
+export const useMethod = () => {
+     return useContext(MethodContext);
+};
