@@ -216,6 +216,205 @@ function createBooleanFunction(
   return output
 }
 
+function createMaxtermBooleanFunction(
+  islands,
+  row,
+  col,
+  rowElement,
+  colElement,
+  sequence,
+) {
+  let output = ''
+  let visited = new Array(row)
+  for (let i = 0; i < row; i++) visited[i] = new Array(col).fill(false)
+
+  islands.sort((a, b) => b.area - a.area)
+
+  /** remove redundant that was not remove earlier */
+  islands = islands.filter(island => {
+    // for three and two variable
+    if (row + col < 7 && island.corner === 'col') {
+      if (island.area === 4) {
+        visited[0][0] = true
+        visited[0][3] = true
+        visited[1][0] = true
+        visited[1][3] = true
+      }
+      if (island.area === 2) {
+        visited[island.start.y][island.start.x] = true
+        visited[island.end.y][island.end.x] = true
+      }
+      return true
+    }
+
+    if (row + col > 7) {
+      visited = getVisited(island, visited)
+    }
+    let flag = false
+
+    for (let j = island.start.y; j <= island.end.y; j++) {
+      for (let i = island.start.x; i <= island.end.x; i++) {
+        // for first table
+        if (island.table === 0 && visited[j][i] === false) {
+          visited[j][i] = true
+          flag = true
+        }
+
+        // for second table
+        if (
+          ((island.endTable && island.endTable === 1) || island.table === 1) &&
+          visited[j][i + 4] === false
+        ) {
+          visited[j][i + 4] = true
+          flag = true
+        }
+        // Second table
+        if (
+          ((island.endTable && island.endTable === 2) || island.table === 2) &&
+          visited[j + 4][i] === false
+        ) {
+          visited[j + 4][i] = true
+          flag = true
+        }
+        // Third table
+        if (
+          ((island.endTable && island.endTable === 3) || island.table === 3) &&
+          visited[j + 4][i + 4] === false
+        ) {
+          visited[j + 4][i + 4] = true
+          flag = true
+        }
+        // if (
+        //   visited[j][i] === false &&
+        //   island.table === 3 &&
+        //   visited[j + 4][i + 4] === false
+        // ) {
+        //   visited[j + 4][i + 4] = true
+        //   flag = true
+        // }
+      }
+    }
+    return flag
+  })
+
+
+  /** Dont remove it  */
+  // islands = removeRedundantIslands(islands, row, col, kMap)
+
+  islands.forEach(island => {
+    output += '('
+    let rowVarCount = rowElement.length
+    let colVarCount = colElement.length
+
+    let rowVar = rowElement
+    let colVar = colElement
+    // to get row variables
+    let rowSequence = sequence.slice(island.start.y, island.end.y + 1)
+
+    /** For Six variable remove msb */
+    if (rowElement.length === 3) {
+      rowVar = [...rowElement].slice(1, rowVarCount)
+      rowVarCount = rowVar.length
+
+      const msb = rowSequence[0].substring(0, 1)
+      const rowBits = rowSequence.map(element => {
+        element = element.replace(msb, '')
+        return element
+      })
+      rowSequence = rowBits
+    }
+
+    if (island.corner === 'row') {
+      rowSequence = [rowSequence[0], rowSequence[rowSequence.length - 1]]
+    }
+    if (island.corner === 'corner')
+      rowSequence = [rowSequence[0], rowSequence[rowSequence.length - 1]]
+
+    /** For six variable add msb variable  */
+    if (rowElement.length === 3) {
+      if (!island.msbChange) {
+        if (island.table === 0 || island.table === 1)
+          output += rowElement[0] + "'" + '+'
+        if (island.table === 2 || island.table === 3) output += rowElement[0] + '+'
+      }
+      // if table changes
+      if (!island.msbChange || island.endTable) {
+        if (island.table === 0 && island.endTable === 1)
+          output += rowElement[0] + "'" + '+'
+        if (island.table === 2 && island.endTable === 3) output += rowElement[0] + '+'
+      }
+    }
+    for (let v = 0; v < rowVarCount; v++) {
+      let currVarVal = rowSequence[0][rowSequence[0].length - rowVarCount + v]
+
+      for (let i = 0; i < rowSequence.length; i++) {
+        if (
+          rowSequence[i][rowSequence[i].length - rowVarCount + v] !== currVarVal
+        )
+          currVarVal = ''
+      }
+      if (currVarVal === '0') output += rowVar[v] + "'" + '+'
+      else if (currVarVal === '1') output += rowVar[v] + '+'
+    }
+
+    // to get colunm variables
+    let colSequence = sequence.slice(island.start.x, island.end.x + 1)
+
+    /** For five and Six variable remove msb */
+    if (colVarCount === 3) {
+      colVar = colElement.slice(1, colVarCount)
+      colVarCount = colVar.length // 2
+    }
+
+    if (island.corner === 'col') {
+      colSequence = [colSequence[0], colSequence[colSequence.length - 1]]
+    }
+
+    if (island.corner === 'corner')
+      colSequence = [colSequence[0], colSequence[colSequence.length - 1]]
+    // remove first rowElement bit and msb
+    let end = rowElement.length
+    if (colElement.length === 3) end += 1
+    const toRemove = colSequence[0].substring(0, end)
+
+    const rowBits = colSequence.map(element => {
+      element = element.replace(toRemove, '')
+      return element
+    })
+
+    /** For six variable add msb variable  */
+    if (colElement.length === 3) {
+      if (!island.msbChange) {
+        if (island.table === 0 || island.table === 2)
+          output += colElement[0] + "'" + '+'
+        if (island.table === 1 || island.table === 3) output += colElement[0] + '+'
+      }
+      // if table changes
+      if (!island.msbChange || island.endTable) {
+        if (island.table === 0 && island.endTable === 2)
+          output += colElement[0] + "'" + '+'
+        if (island.table === 1 && island.endTable === 3) output += colElement[0] + '+'
+      }
+    }
+
+    for (let v = 0; v < colVarCount; v++) {
+      let currVarVal = rowBits[0][v]
+      for (let i = 1; i < rowBits.length; i++) {
+        if (rowBits[i][v] !== currVarVal) currVarVal = ''
+      }
+      if (currVarVal === '0') output += colVar[v] + "'" + '+'
+      else if (currVarVal === '1') output += colVar[v] + '+'
+    }
+
+    if (output.substring(output.length - 1) === '+')
+      output = output.substring(0, output.length - 1)
+
+    output += ')'
+  })
+
+  if (output === '') output = '1'
+  return output
+}
 function removeRedundantIslands(islands, row, col, kMap) {
   for (let i = islands.length - 1; i >= 0; i--) {
     let isRedundant = true
@@ -540,7 +739,7 @@ export function getIslands(data, variables = ['A', 'B', 'C', 'D']) {
       islands.forEach((island, subIndex) => {
         let found = false
         for (let j = 0; j < newArray.length; j++) {
-         
+
           if (isIslandsSame(island, newArray[j])) {
             // condition for table not grouping
             // 1. dont groupt table 0 and three
@@ -649,7 +848,7 @@ export function getIslands(data, variables = ['A', 'B', 'C', 'D']) {
   if (islands.length === 0) return '0'
   islands.sort((a, b) => b.area - a.area)
 
-  let result = createBooleanFunction(
+  let result = createMaxtermBooleanFunction(
     islands,
     row,
     col,
