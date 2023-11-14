@@ -17,7 +17,7 @@ function makeIslandObject(x1, y1, x2, y2, tableIndex, area, corner) {
   }
 }
 
-function createBooleanFunction(
+function createMintermBooleanFunction(
   islands,
   row,
   col,
@@ -392,7 +392,7 @@ function createMaxtermBooleanFunction(
       // if table changes
       if (!island.msbChange || island.endTable) {
         if (island.table === 0 && island.endTable === 2)
-          output += colElement[0] +`'+`
+          output += colElement[0] + `'+`
         if (island.table === 1 && island.endTable === 3) output += colElement[0] + '+'
       }
     }
@@ -708,7 +708,7 @@ function isIslandsSame(island1, island2) {
     island1.corner === island2.corner
   )
 }
-export function getIslands(data, variables = ['A', 'B', 'C', 'D']) {
+export function getIslands(data, variables, method) {
   let kMap = data.kMapValue
   const colElement = data.colElement
   const rowElement = data.rowElement
@@ -848,7 +848,15 @@ export function getIslands(data, variables = ['A', 'B', 'C', 'D']) {
   if (islands.length === 0) return '0'
   islands.sort((a, b) => b.area - a.area)
 
-  let result = createMaxtermBooleanFunction(
+  let result = (method === 'pos') ? createMaxtermBooleanFunction(
+    islands,
+    row,
+    col,
+    rowElement,
+    colElement,
+    sequence,
+    kMap
+  ) : createMintermBooleanFunction(
     islands,
     row,
     col,

@@ -6,6 +6,7 @@ import createGates from './Gates'
 import { getIslands } from '../services/grouping'
 import { createWire } from '../services/common'
 import { addFunctionalExp } from '../actions'
+import { useMethod } from '../context'
 
 
 const DiagramComponent = ({ variables }) => {
@@ -14,14 +15,13 @@ const DiagramComponent = ({ variables }) => {
      const [exp, setExp] = useState('')
      variables = variables ? variables : ['A', 'B', 'C', 'D']
 
-
-
+     const { method } = useMethod()
      const dispatch = useDispatch()
 
      useEffect(
           () => {
                if (!kMap.isNull) {
-                    const expression = getIslands(kMap.data, variables)
+                    const expression = getIslands(kMap.data, variables, method)
                     setExp(expression)
                     dispatch(addFunctionalExp(exp))
                }

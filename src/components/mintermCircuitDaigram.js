@@ -6,15 +6,16 @@ import createGates from './Gates'
 import { getIslands } from '../services/grouping'
 import { createWire } from '../services/common'
 import { addFunctionalExp } from '../actions'
+import { useMethod } from '../context'
 
 
-const DiagramComponent = ({ variables}) => {
+const DiagramComponent = ({ variables }) => {
   const diagramRef = useRef(null)
   const { kMap, setkMap } = useSelector(state => state)
   const [exp, setExp] = useState('')
   variables = variables ? variables : ['A', 'B', 'C', 'D']
 
-
+  const { method } = useMethod()
   const dispatch = useDispatch()
 
   useEffect(
@@ -64,17 +65,7 @@ const DiagramComponent = ({ variables}) => {
           input = createGates(el, x - 25, y).input
           graph.addCell(input)
 
-          if ( part[i + 1] !== `'`) {
-            if (input) gate = createGates(`${input.id}not`, x + 100, y).not
-            else gate = createGates(`not`, x + 100, y).not
-            graph.addCell(gate)
 
-            if (input && gate) {
-              wire = createWire(input, gate)
-              graph.addCell(wire)
-            }
-          }
-     
           if (part[i + 1] === `'`) {
             if (input) gate = createGates(`${input.id}not`, x + 100, y).not
             else gate = createGates(`not`, x + 100, y).not

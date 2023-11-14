@@ -3,7 +3,6 @@ import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import CssBaseline from '@mui/material/CssBaseline'
 import Toolbar from '@mui/material/Toolbar'
-import TextField from '@mui/material/TextField'
 import InputLabel from '@mui/material/InputLabel'
 import { useSelector, useDispatch } from 'react-redux'
 import Grid from '@mui/material/Grid'
@@ -18,7 +17,7 @@ import { useMethod } from './context'
 import TruthTable from './components/truthTable'
 import Kmap from './components/Kmap'
 import SideNavbar from './components/sideNavbar/SideNavbar.js'
-// import Diagram from './components/circuitDaigram.js'
+import MintermCircuitDaigram from './components/mintermCircuitDaigram.js'
 import MaxtermDaigram from './components/maxtermCircuitDaigram.js'
 
 import Form from './components/Form.js'
@@ -183,7 +182,8 @@ function App() {
           <Grid container>
             <Grid item xs={8}>
               <Typography variant='h4'>Circuit</Typography>
-              <MaxtermDaigram variables={variables} method='pos' />
+              {method === 'sop' && <MintermCircuitDaigram variables={variables} />}
+              {method === 'pos' && <MaxtermDaigram variables={variables} />}
             </Grid>
           </Grid>
           <Grid container>
