@@ -334,13 +334,13 @@ function createMaxtermBooleanFunction(
     if (rowElement.length === 3) {
       if (!island.msbChange) {
         if (island.table === 0 || island.table === 1)
-          output += rowElement[0] + "'" + '+'
+          output += rowElement[0] + `'+`
         if (island.table === 2 || island.table === 3) output += rowElement[0] + '+'
       }
       // if table changes
       if (!island.msbChange || island.endTable) {
         if (island.table === 0 && island.endTable === 1)
-          output += rowElement[0] + "'" + '+'
+          output += rowElement[0] + `'+`
         if (island.table === 2 && island.endTable === 3) output += rowElement[0] + '+'
       }
     }
@@ -353,7 +353,7 @@ function createMaxtermBooleanFunction(
         )
           currVarVal = ''
       }
-      if (currVarVal === '0') output += rowVar[v] + "'" + '+'
+      if (currVarVal === '0') output += rowVar[v] + `'+`
       else if (currVarVal === '1') output += rowVar[v] + '+'
     }
 
@@ -386,13 +386,13 @@ function createMaxtermBooleanFunction(
     if (colElement.length === 3) {
       if (!island.msbChange) {
         if (island.table === 0 || island.table === 2)
-          output += colElement[0] + "'" + '+'
+          output += colElement[0] + `'+`
         if (island.table === 1 || island.table === 3) output += colElement[0] + '+'
       }
       // if table changes
       if (!island.msbChange || island.endTable) {
         if (island.table === 0 && island.endTable === 2)
-          output += colElement[0] + "'" + '+'
+          output += colElement[0] +`'+`
         if (island.table === 1 && island.endTable === 3) output += colElement[0] + '+'
       }
     }
@@ -402,7 +402,7 @@ function createMaxtermBooleanFunction(
       for (let i = 1; i < rowBits.length; i++) {
         if (rowBits[i][v] !== currVarVal) currVarVal = ''
       }
-      if (currVarVal === '0') output += colVar[v] + "'" + '+'
+      if (currVarVal === '0') output += colVar[v] + `'+`
       else if (currVarVal === '1') output += colVar[v] + '+'
     }
 
@@ -412,7 +412,7 @@ function createMaxtermBooleanFunction(
     output += ')'
   })
 
-  if (output=== '()') output = '1'
+  if (output === '()') output = '1'
   return output
 }
 function removeRedundantIslands(islands, row, col, kMap) {
@@ -817,12 +817,12 @@ export function getIslands(data, variables = ['A', 'B', 'C', 'D']) {
             for (let position of positionsOfNewArray) {
               let x = position[0]
               let y = position[1]
-              if (island.start.x == x && island.start.y == y) {
+              if (island.start.x === x && island.start.y === y) {
                 islandStartInside = true
                 startFoundInX = x
                 startFoundInY = y
               }
-              if (island.end.x == x && island.end.y == y) {
+              if (island.end.x === x && island.end.y === y) {
                 islandEndInside = true
                 endFoundInX = x
                 endFoundInY = y
