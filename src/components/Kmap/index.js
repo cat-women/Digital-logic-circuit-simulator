@@ -22,12 +22,12 @@ import {
 
 import { useMethod } from '../../context'
 
-export default function Kmap({ variables, expression }) {
+export default function Kmap() {
   const dispatch = useDispatch()
   const inputRef = useRef(null)
   const [positionalArray, setPositionalArray] = useState([])
 
-  const { method } = useMethod()
+  const { method, userExpression, variables } = useMethod()
 
   // const [kMapValue, setKMapValue] = useState([])
 
@@ -52,35 +52,35 @@ export default function Kmap({ variables, expression }) {
   let kmapIndex = 0
   switch (variableCount) {
     case 2:
-      expression.forEach(item => {
+      userExpression.forEach(item => {
         const key = twoVariables[item]
         if (!kMapValue[key[0]]) kMapValue[key[0]] = []
         kMapValue[key[0]][key[1]] = 1
       })
       break
     case 3:
-      expression.forEach(item => {
+      userExpression.forEach(item => {
         const key = threeVariables[item]
         if (!kMapValue[key[0]]) kMapValue[key[0]] = []
         kMapValue[key[0]][key[1]] = 1
       })
       break
     case 4:
-      expression.forEach(item => {
+      userExpression.forEach(item => {
         const key = fourVariables[item]
         if (!kMapValue[key[0]]) kMapValue[key[0]] = []
         kMapValue[key[0]][key[1]] = 1
       })
       break
     case 5:
-      expression.forEach(item => {
+      userExpression.forEach(item => {
         const key = fiveVariables[item]
         if (!kMapValue[key[0]]) kMapValue[key[0]] = []
         kMapValue[key[0]][key[1]] = 1
       })
       break
     case 6:
-      expression.forEach(item => {
+      userExpression.forEach(item => {
         const key = sixVariables[item]
         if (!kMapValue[key[0]]) kMapValue[key[0]] = []
         kMapValue[key[0]][key[1]] = 1
@@ -113,7 +113,7 @@ export default function Kmap({ variables, expression }) {
     () => {
       dispatch(addKMap({ kMapValue, rowElement, colElement }))
     },
-    [expression, variables]
+    [userExpression, variables]
   )
   return kMapValue.length < 1
     ? <h6> Kmap Table</h6>

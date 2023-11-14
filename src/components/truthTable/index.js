@@ -1,15 +1,17 @@
 import React from 'react'
 import useStyles from './styles'
+import { useMethod } from '../../context'
 
 import { decimalToBinary } from '../../services/common'
-export default function TruthTable(props) {
+export default function TruthTable() {
   const classes = useStyles()
 
   const truthTable = []
-  const variables = props.variables //[('A', 'B', 'C', 'D', 'E', 'F')]
+  const { variables, method, userExpression } = useMethod()
+
   const variableCount = variables ? variables.length : 4
 
-  let expresion = props.expression.map(item => Number(item))
+  let expresion = userExpression.map(item => Number(item))
   let fValue = []
 
   const tableSize = Math.pow(2, variableCount)
@@ -19,10 +21,11 @@ export default function TruthTable(props) {
     truthTable.push(i)
     // functional value
     // for sop 
-    if (props.method === 'sop')
-      expresion.includes(i) ? fValue.push(1) : fValue.push(0)
-    if (props.method === 'pos')
+    if (method === 'pos')
       expresion.includes(i) ? fValue.push(0) : fValue.push(1)
+    if (method === 'sop') {
+      expresion.includes(i) ? fValue.push(1) : fValue.push(0)
+    }
 
 
   }
@@ -49,28 +52,14 @@ export default function TruthTable(props) {
                     {bit}
                   </td>
                 )}
-                {/* if its in minterm i.e sop highlight 1 else if its in maxterm highlight 0 */}
-                {props.method === 'sop' ?
-                  <td
-                    key={index}
-                    td
-                    className={`${classes.td} ${fValue[index] === 0
-                      ? classes.tdGray
-                      : classes.tdGreen}`}
-                  >
-                    {fValue[index]}
-                  </td>
-                  :
-                  <td
-                    key={index}
-                    td
-                    className={`${classes.td} ${fValue[index] === 0
-                      ? classes.tdGreen
-                      : classes.tdGray}`}
-                  >
-                    {fValue[index]}
-                  </td>
-                }
+                <td
+                  key={index}
+                  className={`${isActive(fValue[index], method) 
+                    ? classes.tdGreen
+                    : classes.tdGray} ${classes.td}` }
+                >
+                  {fValue[index]}
+                </td>
               </tr>
             )
           })}
@@ -78,4 +67,11 @@ export default function TruthTable(props) {
       </table>
     </div>
   )
+}
+
+function isActive(value, method) {
+  if (value && method ==='sop') return true
+  if (!value && method ==='pos') return true
+
+  return false
 }

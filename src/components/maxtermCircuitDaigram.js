@@ -47,7 +47,6 @@ const DiagramComponent = ({ variables }) => {
                }
           })
           const parts = exp.split(')')
-          console.log("maxterm split", parts)
           let x = 50
           let y = 100
           const gates = {}

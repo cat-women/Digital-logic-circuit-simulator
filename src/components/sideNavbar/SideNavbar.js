@@ -7,27 +7,30 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import Toolbar from '@mui/material/Toolbar'
 import Button from '@mui/material/Button'
+import { useMethod } from '../../context'
 
-export default function SideNavbar(props: Props) {
+export default function SideNavbar() {
+  const { setVariables } = useMethod()
+
   const handleVariable = index => {
     switch (index) {
       case 0:
-        props.handleVariable(['A', 'B'])
+        setVariables(['A', 'B'])
         break
       case 1:
-        props.handleVariable(['A', 'B', 'C'])
+        setVariables(['A', 'B', 'C'])
         break
       case 2:
-        props.handleVariable(['A', 'B', 'C', 'D'])
+        setVariables(['A', 'B', 'C', 'D'])
         break
       case 3:
-        props.handleVariable(['A', 'B', 'C', 'D', 'E'])
+        setVariables(['A', 'B', 'C', 'D', 'E'])
         break
       case 4:
-        props.handleVariable(['A', 'B', 'C', 'D', 'E', 'F'])
+        setVariables(['A', 'B', 'C', 'D', 'E', 'F'])
         break
       default:
-        props.handleVariable(['A', 'B', 'C'])
+        setVariables(['A', 'B'])
     }
   }
 

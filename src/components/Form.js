@@ -4,8 +4,13 @@ import Button from '@mui/material/Button'
 import { useDispatch } from 'react-redux'
 
 import { getResult } from '../actions/result'
-export default function Form (props) {
+
+import { useMethod } from '../context'
+
+export default function Form() {
   const [inputValue, setInputValue] = useState('')
+  const { setUserExpression, variables } = useMethod()
+
   const dispatch = useDispatch()
 
   const handleNewExpression = e => {
@@ -15,6 +20,7 @@ export default function Form (props) {
   const handleExpression = () => {
     if (!inputValue.length) {
       alert('Enter a valid number')
+      setInputValue('')
       dispatch(getResult())
       return false
     }
@@ -24,15 +30,16 @@ export default function Form (props) {
     let isValid = true
 
     for (const element of newExp) {
-      if (element > Math.pow(2, props.variables.length)) {
+      if (element >= Math.pow(2, variables.length)) {
         alert('Invalid position for the given variable')
+        setInputValue('')
         isValid = false
         break
       }
     }
 
     if (isValid) {
-      props.handleExpression(newExp)
+      setUserExpression(newExp)
     }
 
     return isValid

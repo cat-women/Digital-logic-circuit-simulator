@@ -37,10 +37,7 @@ function App() {
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
 
-  const [variables, setvariables] = useState(['A', 'B'])
-  const [expression, setExpression] = useState([0, 1])
-
-  const { method, setMethod } = useMethod();
+  const { method, setMethod, variables, userExpression, user, setUser } = useMethod();
 
   const handleMethod = (value) => {
     setMethod(value)
@@ -48,12 +45,10 @@ function App() {
 
   const drawerWidth = 240
   const functionalExp = useSelector(state => state.funcExp)
-  const [user, setUser] = useState(null)
-
 
   useEffect(() => {
     dispatch(getResult())
-  })
+  }, [variables])
 
   useEffect(() => {
     const loggedUser = JSON.parse(sessionStorage.getItem('user'))
@@ -66,27 +61,15 @@ function App() {
     setMobileOpen(!mobileOpen)
   }
 
-  const handleExpression = newExp => {
-    setExpression(newExp)
-    if (user && functionalExp.exp.length) {
-      addResult({ input: expression, expression: functionalExp })
-    }
-  }
-
-  const handleVariable = newVariable => {
-    setvariables(newVariable)
-  }
   const handleSignout = () => {
     signOut()
     setUser(null)
   }
 
-
-
-
-  if (expression.length > Math.pow(2, variables.length)) {
+  if (userExpression.length > Math.pow(2, variables.length)) {
     alert('Expression length exceed for given variable')
   }
+
   return (
     <div className='App'>
       <Box sx={{ display: 'flex' }}>
@@ -101,7 +84,7 @@ function App() {
           }}
         >
           <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
-            <Form handleExpression={handleExpression} variables={variables} />
+            <Form />
             <div>
               <InputLabel sx={{ marginLeft: '129px' }}>
                 Expression :
@@ -153,7 +136,6 @@ function App() {
                 width: drawerWidth
               }
             }}
-            handleVariable={handleVariable}
           />
         </Box>
         <Box
@@ -172,10 +154,10 @@ function App() {
           </Grid>
           <Grid container>
             <Grid item xs={6}>
-              <TruthTable variables={variables} expression={expression} method="sop" />
+              <TruthTable />
             </Grid>
             <Grid item xs={6}>
-              <Kmap variables={variables} expression={expression} method="sop" />
+              <Kmap />
             </Grid>
           </Grid>
           <Divider sx={{ marginTop: '90px' }} />
