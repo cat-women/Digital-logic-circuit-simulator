@@ -412,7 +412,7 @@ function createMaxtermBooleanFunction(
     output += ')'
   })
 
-  if (output === '') output = '1'
+  if (output=== '()') output = '1'
   return output
 }
 function removeRedundantIslands(islands, row, col, kMap) {

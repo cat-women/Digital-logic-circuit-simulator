@@ -8,35 +8,12 @@ import { createWire } from '../services/common'
 import { addFunctionalExp } from '../actions'
 
 
-function sopToPos(sop) {
-  let pos = ''
-  const terms = sop.split('+')
-  terms.map(t => {
-    pos += '('
-    let temp = ''
-    for (let i = 0; i < t.length; i++) {
-      temp += t[i]
-      t[i + 1] === `'` ? i++ : temp += `'`
-
-      if (i !== t.length - 1)
-        temp += '+'
-    }
-    pos += temp + ')'
-
-  })
-  return pos
-
-}
-const DiagramComponent = ({ variables, method }) => {
+const DiagramComponent = ({ variables}) => {
   const diagramRef = useRef(null)
   const { kMap, setkMap } = useSelector(state => state)
   const [exp, setExp] = useState('')
   variables = variables ? variables : ['A', 'B', 'C', 'D']
 
-
-  //   For sop 
-  let primaryGate = (method === 'pos') ? 'and' : 'or'
-  let secondaryGate = (method === 'pos') ? "or" : 'and'
 
   const dispatch = useDispatch()
 
@@ -87,8 +64,7 @@ const DiagramComponent = ({ variables, method }) => {
           input = createGates(el, x - 25, y).input
           graph.addCell(input)
 
-          // POS
-          if (method = 'pos' && part[i + 1] !== `'`) {
+          if ( part[i + 1] !== `'`) {
             if (input) gate = createGates(`${input.id}not`, x + 100, y).not
             else gate = createGates(`not`, x + 100, y).not
             graph.addCell(gate)
@@ -98,9 +74,8 @@ const DiagramComponent = ({ variables, method }) => {
               graph.addCell(wire)
             }
           }
-
-          // SOP          
-          if (method === 'sop' && part[i + 1] === `'`) {
+     
+          if (part[i + 1] === `'`) {
             if (input) gate = createGates(`${input.id}not`, x + 100, y).not
             else gate = createGates(`not`, x + 100, y).not
             graph.addCell(gate)
@@ -121,7 +96,7 @@ const DiagramComponent = ({ variables, method }) => {
         elements.forEach(element => {
           ids.push(element.id)
         })
-        gate = createGates(`${ids}`, x + 300, y - 150)[primaryGate]
+        gate = createGates(`${ids}`, x + 300, y - 150).and
         graph.addCell(gate)
 
         for (let i = 0; i < elements.length; i++) {
@@ -143,15 +118,15 @@ const DiagramComponent = ({ variables, method }) => {
     const keys = Object.keys(gates)
 
     if (keys.length > 1) {
-      const orGate = createGates('or', 700, 300)[secondaryGate]
-      graph.addCell(orGate)
+      const mainGate = createGates('or', 700, 300).or
+      graph.addCell(mainGate)
 
       Object.values(gates).forEach(gate => {
-        const wire = createWire(gate, orGate)
+        const wire = createWire(gate, mainGate)
         graph.addCell(wire)
       })
 
-      finalWire = createWire(orGate, output)
+      finalWire = createWire(mainGate, output)
     } else finalWire = createWire(gates[keys[0]], output)
 
     graph.addCell(finalWire)

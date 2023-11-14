@@ -41,7 +41,6 @@ export default function Kmap({ variables, expression }) {
   const rowBits = []
   const colBits = []
 
-  console.log("method in kamp", method)
   /** Set row can col bits  */
   for (let i = 0; i < rowElementBitSize; i++)
     rowBits.push(binaryToGray(decimalToBinary(i, rowElement.length)))

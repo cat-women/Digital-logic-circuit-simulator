@@ -18,7 +18,9 @@ import { useMethod } from './context'
 import TruthTable from './components/truthTable'
 import Kmap from './components/Kmap'
 import SideNavbar from './components/sideNavbar/SideNavbar.js'
-import Diagram from './components/circuitDaigram.js'
+// import Diagram from './components/circuitDaigram.js'
+import MaxtermDaigram from './components/maxtermCircuitDaigram.js'
+
 import Form from './components/Form.js'
 import useStyles from './styles'
 import AuthModal from './components/auth/form'
@@ -49,7 +51,6 @@ function App() {
   const functionalExp = useSelector(state => state.funcExp)
   const [user, setUser] = useState(null)
 
-  console.log("method in app.js", useMethod)
 
   useEffect(() => {
     dispatch(getResult())
@@ -182,7 +183,7 @@ function App() {
           <Grid container>
             <Grid item xs={8}>
               <Typography variant='h4'>Circuit</Typography>
-              <Diagram variables={variables} method='pos' />
+              <MaxtermDaigram variables={variables} method='pos' />
             </Grid>
           </Grid>
           <Grid container>
