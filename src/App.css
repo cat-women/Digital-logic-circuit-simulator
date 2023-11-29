@@ -1,6 +1,6 @@
 .App {
-  text-align: center;
   background-color: aliceblue;
+  font-size: large;
 }
 
 .App-logo {
@@ -27,7 +27,35 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
+}
+
+.main-container {
+  margin: auto;
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #ccc;
+}
+
+
+.container {
+  justify-content: left;
+  padding: 40px;
+}
+
+.components {
+  display: flex;
+  flex-direction: column;
+  align-items: center
+}
+
+.type-button{
+  font-size: 25px;
+  padding: 30px;
 }

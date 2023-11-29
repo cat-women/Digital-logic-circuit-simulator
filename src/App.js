@@ -83,7 +83,7 @@ function App() {
             ml: { sm: `${drawerWidth}px` }
           }}
         >
-          <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Toolbar sx={{ display: 'flex', justifyContent: 'space-between',fontSize:'2rem' }}>
             <Form />
             <div>
               <InputLabel sx={{ marginLeft: '129px' }}>
@@ -112,7 +112,7 @@ function App() {
               aria-describedby='modal-modal-description'
             >
               <Box className={classes.modalBox}>
-                <AuthModal setOpen={setOpen} setUser={setUser} />
+                <AuthModal setOpen={setOpen}  />
               </Box>
             </Modal>
           </Toolbar>
@@ -147,32 +147,39 @@ function App() {
           }}
         >
           <Toolbar />
-          <Grid container style={{ marginLeft: '15px', padding: '20px' }}>
-            <Button onClick={(e) => handleMethod('pos')} style={{ background: method === 'pos' ? 'green' : '', color: 'black' }}>Maxterm</Button>
-            <Button onClick={(e) => handleMethod('sop')} style={{ background: method === 'sop' ? 'green' : '', color: 'black' }}>Minterm</Button>
+          <div className='main-container'>
+            <Grid style={{ padding: '40px' }}>
+              <Button onClick={(e) => handleMethod('pos')} style={{ background: method === 'pos' ? 'green' : 'gray', color: 'black', fontSize: 'large', padding: '10px', margin: '20px', width: '200px' }}>Maxterm</Button>
+              <Button onClick={(e) => handleMethod('sop')} style={{ background: method === 'sop' ? 'green' : 'gray', color: 'black', fontSize: 'large', padding: '10px', margin: '20px', width: '200px' }}>Minterm</Button>
 
-          </Grid>
-          <Grid container>
-            <Grid item xs={6}>
-              <TruthTable />
             </Grid>
-            <Grid item xs={6}>
-              <Kmap />
+            <Grid container className='container'>
+              <Grid item xs={6}>
+                <TruthTable className='components' />
+                <Typography variant='h4' style={{ padding: '30px' }}>Truth Table</Typography>
+
+              </Grid>
+              <Grid item xs={6}>
+                <Kmap className='components' />
+                <Typography variant='h4' style={{ padding: '30px' }}>KMap</Typography>
+
+
+              </Grid>
             </Grid>
-          </Grid>
-          <Divider sx={{ marginTop: '90px' }} />
-          <Grid container>
-            <Grid item xs={8}>
-              <Typography variant='h4'>Circuit</Typography>
-              {method === 'sop' && <MintermCircuitDaigram variables={variables} />}
-              {method === 'pos' && <MaxtermDaigram variables={variables} />}
+            <Divider sx={{ marginTop: '90px' }} />
+            <Grid className='container'>
+              <Grid item xs={8} >
+                <Typography variant='h3' style={{ padding: '30px' }}>Circuit</Typography>
+                {method === 'sop' && <MintermCircuitDaigram variables={variables} />}
+                {method === 'pos' && <MaxtermDaigram variables={variables} />}
+              </Grid>
             </Grid>
-          </Grid>
-          <Grid container>
-            <Grid item xs={8}>
-              <Result />
+            <Grid container className='container' >
+              <Grid item xs={8}>
+                <Result />
+              </Grid>
             </Grid>
-          </Grid>
+          </div>
         </Box>
       </Box>
     </div>

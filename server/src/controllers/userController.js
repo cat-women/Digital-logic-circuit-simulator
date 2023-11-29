@@ -5,7 +5,6 @@ const { generateToken } = require('../services/token')
 class UserController {
   signup = async (req, res, next) => {
     const { firstName, lastName, email, password } = req.body
-
     try {
       const oldUser = await User.findOne({
         email

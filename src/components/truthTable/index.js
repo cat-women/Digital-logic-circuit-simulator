@@ -3,6 +3,7 @@ import useStyles from './styles'
 import { useMethod } from '../../context'
 
 import { decimalToBinary } from '../../services/common'
+import { Typography } from '@mui/material'
 export default function TruthTable() {
   const classes = useStyles()
 
@@ -35,11 +36,11 @@ export default function TruthTable() {
         <thead>
           <tr>
             {variables.map(variable =>
-              <th key={variable}>
+              <th key={variable} className={classes.th}>
                 {variable}
               </th>
             )}
-            <th>F</th>
+            <th className={classes.th}>F</th>
           </tr>
         </thead>
         <tbody>

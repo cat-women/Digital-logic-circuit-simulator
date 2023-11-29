@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 import {
   Container,
@@ -12,8 +12,11 @@ import {
 
 import makeStyles from "./styles.js";
 import { signIn, signUp } from "../../actions/auth";
+import { useMethod } from "../../context/index.js";
 
 const Form = (props) => {
+  const { user, setUser } = useMethod();
+
   const classess = makeStyles();
   const [isSignUp, setIsSignUp] = useState(false);
   const [formData, setformData] = useState({});
@@ -37,22 +40,32 @@ const Form = (props) => {
       setError(false);
     }
   };
-  const handleSubmit = async e => {
+  const register = async (e) => {
     e.preventDefault();
-    if (isSignUp) {
-      let res = await signUp(formData)
-      console.log(res);
-      if (res.msg !== "User created") {
-        setIsSignUp(true)
-        alert(res.msg)
-      } else
-        setIsSignUp(false)
-    } else {
-      const res = await dispatch(signIn(formData))
-      props.setOpen(false)
-      props.setUser(JSON.parse(sessionStorage.getItem('user')))
+    let res = await signUp(formData)
+    if (res.status == 200) {
+      setIsSignUp(false)
+      alert(res.data.msg)
+      return
+    }
+    alert(res.data.msg)
+    setIsSignUp(false)
+    return
+  }
 
-    };
+  const login = async (e) => {
+    e.preventDefault();
+    const res = await signIn(formData)
+
+    if (res.status === 200) {
+      props.setOpen(false)
+      setUser(res.data)
+      alert(res.data.msg)
+      return
+    }
+    console.log("eerror", res)
+    alert(res.data.msg)
+    return
   };
 
   return (
@@ -61,7 +74,7 @@ const Form = (props) => {
         <Typography className={classess.heading} variant="h4">
           {isSignUp ? "Register" : "Login"}
         </Typography>
-        <form className={classess.form} onSubmit={handleSubmit}>
+        <form className={classess.form} onSubmit={(e) => isSignUp ? register(e) : login(e)}>
           <Grid className={classess.input}>
             {isSignUp &&
               <>
@@ -127,7 +140,7 @@ const Form = (props) => {
             </Button>
           </Grid>
         </form>
-        <Grid justify="flex-end" className={classess.footer}>
+        <Grid className={classess.footer}>
           <Grid item>
             <Button onClick={switchMode} className={classess.btnSwitch}>
               {isSignUp

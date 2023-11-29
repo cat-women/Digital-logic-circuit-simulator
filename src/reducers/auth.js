@@ -4,7 +4,8 @@ import { signIn } from '../actions/auth'
 
 const initialState = {
   user: null,
-  isLoggedIn: false
+  isLoggedIn: false,
+  error: null
 }
 
 const authSlice = createSlice({
@@ -19,8 +20,9 @@ const authSlice = createSlice({
       state.isLoggedIn = true
       state.user = action.payload.result
     },
-    [signIn.rejected]: state => {
+    [signIn.rejected]: (state, action) => {
       state.isLoggedIn = false
+      state.error = action.payload.msg
     }
   }
 })

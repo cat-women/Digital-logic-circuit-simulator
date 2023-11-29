@@ -47,7 +47,7 @@ export default function SideNavbar() {
           'Six Variable'
         ].map((text, index) =>
           <ListItem
-            key={text}
+            key={index}
             disablePadding
             onClick={() => handleVariable(index)}
           >
@@ -55,7 +55,7 @@ export default function SideNavbar() {
               <ListItemIcon>
                 <Button color="primary" />
               </ListItemIcon>
-              <ListItemText primary={text} />
+              <ListItemText primary={text} style={{ fontSize: 'larger' }} />
             </ListItemButton>
           </ListItem>
         )}

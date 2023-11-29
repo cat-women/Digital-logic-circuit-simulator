@@ -121,17 +121,17 @@ export default function Kmap() {
       <thead>
         <tr>
           <th />
-          <th colSpan="5">
+          <th colSpan="5" className={classes.th}>
             {colElement.map(key => key)}
           </th>
         </tr>
         <tr>
-          <th />
-          <th />
+          <th  />
+          <th  className={classes.th}/>
           {colBits.map(bit =>
             <th
               key={bit}
-              className={` ${bit === 4 ? classes.doubleDarkBorder : ''}`}
+              className={`${bit === 4 ? classes.doubleDarkBorder : '' ,classes.th}` }
             >
               {bit}
             </th>
@@ -143,7 +143,7 @@ export default function Kmap() {
           return (
             <tr key={index}>
               {index === 0 &&
-                <th className={classes.td} rowSpan={rowElementBitSize}>
+                <th className={classes.th} rowSpan={rowElementBitSize}>
                   {rowElement}
                 </th>}
               <th className={classes.td}>
@@ -181,7 +181,7 @@ export default function Kmap() {
           )
         })}
       </tbody>
-    </table>
+    </table >
 }
 
 function isActive(value, method) {

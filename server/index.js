@@ -14,7 +14,7 @@ const router = express.Router()
 
 const PORT = process.env.PORT || 8000
 
-router.use(function(req, res, next) {
+router.use(function (req, res, next) {
   res.header('Access-Control-Allow-Origin', '*')
   res.setHeader(
     'Access-Control-Allow-Methods',
@@ -48,3 +48,7 @@ app.use(ErrorHandler)
 // routes
 app.use('/user', User)
 app.use('/exp', Exp)
+
+app.get('/', (req, res) => {
+  res.status(200).json({ msg: "Server is running " })
+})
