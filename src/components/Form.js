@@ -3,13 +3,13 @@ import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import { useDispatch } from 'react-redux'
 
-import { getResult } from '../actions/result'
+import { getResult, addResult } from '../actions/result'
 
 import { useMethod } from '../context'
 
 export default function Form() {
   const [inputValue, setInputValue] = useState('')
-  const { setUserExpression, variables } = useMethod()
+  const { setUserExpression, variables, userExpression, user, booleanExpression, userHistory, setUserHistory } = useMethod()
 
   const dispatch = useDispatch()
 
@@ -17,7 +17,7 @@ export default function Form() {
     const value = e.target.value
     setInputValue(value)
   }
-  const handleExpression = () => {
+  const handleExpression = async () => {
     if (!inputValue.length) {
       alert('Enter a valid number')
       setInputValue('')
@@ -40,6 +40,10 @@ export default function Form() {
 
     if (isValid) {
       setUserExpression(newExp)
+
+      // save sovled expresssion 
+      if (user && booleanExpression)
+        await addResult({ input: newExp, expression: booleanExpression })
     }
 
     return isValid
@@ -49,8 +53,8 @@ export default function Form() {
     <div>
       <TextField
         id='standard-basic'
-        label='Expression'
         variant='standard'
+        label={JSON.stringify(userExpression)}
         value={inputValue}
         onChange={handleNewExpression}
       />

@@ -59,7 +59,6 @@ const Form = (props) => {
 
     if (res.status === 200) {
       props.setOpen(false)
-      setUser(res.data)
       alert(res.data.msg)
       return
     }

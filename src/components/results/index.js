@@ -10,39 +10,33 @@ import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import { useSelector, useDispatch } from 'react-redux'
 import { deleteAll, deleteResult, getResult } from '../../actions/result'
+import { useMethod } from '../../context'
 
-export default function Results(props) {
-  const latestData = useSelector(state => state.results)
-  const [results, setResults] = useState(latestData)
-
+export default function Results() {
+  const { userHistory, setUserHistory } = useMethod()
+  console.log("user data", userHistory);
+  const dispatch = useDispatch()
+  let results = userHistory
   useEffect(() => {
-    setResults(latestData)
-  }, [latestData])
+    dispatch(getResult())
+  }, [])
 
-  console.log("log in table", latestData);
   const handleDelete = (id) => {
-    deleteResult(id).then(res => {
-      alert(res.data.msg)
-      let newResult = results.data?.filter(result => result._id !== id)
-      setResults(newResult)
-
-
-    }).catch(error => {
-      alert("Delete failed")
-    })
+    dispatch(deleteResult(id))
 
   }
 
   const clear = () => {
-    deleteAll().then(res => {
-      alert("Data removed")
-      setResults({ data: [] })
-    }).catch(error => {
-      alert("Delete failed")
-    })
+    const result = window.confirm('Do you want to proceed?');
+    if (result) {
+      dispatch(deleteAll())
+      return
+    }
+    return
   }
-
-  if (results?.isLoading || !results?.data?.length) return
+  if (userHistory?.isLoading || !userHistory?.data?.length) return (
+    <Typography>Date does not exist </Typography>
+  )
 
   return (
     <div >
@@ -58,7 +52,7 @@ export default function Results(props) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {results.data.map((result, index) =>
+            {userHistory.data.map((result, index) =>
               <TableRow
                 key={index}
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -72,7 +66,7 @@ export default function Results(props) {
                   )}
                 </TableCell>
                 <TableCell align="right">
-                  {JSON.parse(result.expression).exp}
+                  {JSON.parse(result.expression)}
                 </TableCell>
                 <TableCell align="right"> <Button sx={{ color: "red" }} onClick={(e) => handleDelete(result._id)}>Delete </Button></TableCell>
               </TableRow>

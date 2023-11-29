@@ -11,7 +11,8 @@ class ExpressionController {
         input: JSON.stringify(input),
         expression: JSON.stringify(expression)
       })
-      return res.status(200).json({ msg: 'expression added' })
+
+      return res.status(200).json({ msg: 'expression added', expression: result })
     } catch (error) {
       console.log(error)
       next()
@@ -20,7 +21,7 @@ class ExpressionController {
   getAll = async (req, res, next) => {
     const userId = req.user.id
     try {
-      if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+      if (!userId) {
         return res.status(401).json({ msg: "Not authorized" });
       }
       const exps = await Expression.find({ userId })
@@ -38,7 +39,7 @@ class ExpressionController {
         return res.status(404).json({ msg: 'Expression does not exist' })
       await exp.remove()
 
-      res.status(200).json({ msg: 'Expression deleted' })
+      res.status(200).json({ msg: 'Expression deleted', exp })
     } catch (error) {
       console.log(error)
       next()

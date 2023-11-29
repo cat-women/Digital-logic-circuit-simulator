@@ -26,29 +26,23 @@ import AuthModal from './components/auth/form'
 import Result from './components/results'
 
 import { signOut } from './actions/auth'
-import { getResult, addResult } from './actions/result'
 
 function App() {
+  const { method, setMethod, variables, userExpression, user, setUser, booleanExpression, setUserHistory } = useMethod();
+
   const classes = useStyles()
   const dispatch = useDispatch()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [open, setOpen] = useState(false)
-
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
-
-  const { method, setMethod, variables, userExpression, user, setUser } = useMethod();
+  setUserHistory(useSelector(state => state.results))
 
   const handleMethod = (value) => {
     setMethod(value)
   }
-
   const drawerWidth = 240
-  const functionalExp = useSelector(state => state.funcExp)
 
-  useEffect(() => {
-    dispatch(getResult())
-  }, [variables])
 
   useEffect(() => {
     const loggedUser = JSON.parse(sessionStorage.getItem('user'))
@@ -83,7 +77,7 @@ function App() {
             ml: { sm: `${drawerWidth}px` }
           }}
         >
-          <Toolbar sx={{ display: 'flex', justifyContent: 'space-between',fontSize:'2rem' }}>
+          <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', fontSize: '2rem' }}>
             <Form />
             <div>
               <InputLabel sx={{ marginLeft: '129px' }}>
@@ -91,7 +85,7 @@ function App() {
               </InputLabel>
 
               <InputLabel sx={{ marginLeft: '129px', color: 'red' }}>
-                {functionalExp.exp}{' '}
+                {booleanExpression}
               </InputLabel>
             </div>
             {user
@@ -112,7 +106,7 @@ function App() {
               aria-describedby='modal-modal-description'
             >
               <Box className={classes.modalBox}>
-                <AuthModal setOpen={setOpen}  />
+                <AuthModal setOpen={setOpen} />
               </Box>
             </Modal>
           </Toolbar>
@@ -170,15 +164,16 @@ function App() {
             <Grid className='container'>
               <Grid item xs={8} >
                 <Typography variant='h3' style={{ padding: '30px' }}>Circuit</Typography>
-                {method === 'sop' && <MintermCircuitDaigram variables={variables} />}
-                {method === 'pos' && <MaxtermDaigram variables={variables} />}
+                {method === 'sop' && <MintermCircuitDaigram />}
+                {method === 'pos' && <MaxtermDaigram />}
               </Grid>
             </Grid>
-            <Grid container className='container' >
-              <Grid item xs={8}>
-                <Result />
-              </Grid>
-            </Grid>
+            {user &&
+              <Grid container className='container' >
+                <Grid item xs={8}>
+                  <Result />
+                </Grid>
+              </Grid>}
           </div>
         </Box>
       </Box>

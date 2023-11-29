@@ -5,25 +5,23 @@ import { useSelector, useDispatch } from 'react-redux'
 import createGates from './Gates'
 import { getIslands } from '../services/grouping'
 import { createWire } from '../services/common'
-import { addFunctionalExp } from '../actions'
 import { useMethod } from '../context'
 
 
-const DiagramComponent = ({ variables }) => {
+const DiagramComponent = () => {
+     const { variables, booleanExpression, setBooleanExpression, method } = useMethod();
+
      const diagramRef = useRef(null)
      const { kMap, setkMap } = useSelector(state => state)
      const [exp, setExp] = useState('')
-     variables = variables ? variables : ['A', 'B', 'C', 'D']
-
-     const { method } = useMethod()
      const dispatch = useDispatch()
 
      useEffect(
           () => {
                if (!kMap.isNull) {
                     const expression = getIslands(kMap.data, variables, method)
-                    setExp(expression)
-                    dispatch(addFunctionalExp(exp))
+                    setBooleanExpression(expression)
+
                }
           },
           [kMap]
@@ -32,10 +30,12 @@ const DiagramComponent = ({ variables }) => {
           () => {
                createCircuit()
           },
-          [exp]
+          [booleanExpression]
      )
 
      function createCircuit() {
+          if (exp === '1') return <h6>Diagram will be shown here</h6>
+
           const graph = new dia.Graph()
           new dia.Paper({
                el: diagramRef.current,
@@ -46,12 +46,12 @@ const DiagramComponent = ({ variables }) => {
                     color: 'rgba(255, 255, 255, 0.8)'
                }
           })
-          const parts = exp.split(')')
+          const parts = booleanExpression?.split(')')
           let x = 50
           let y = 100
           const gates = {}
 
-          parts.forEach((part, index) => {
+          parts?.forEach((part, index) => {
                if (!part.length) return
 
                let input = null
@@ -125,7 +125,6 @@ const DiagramComponent = ({ variables }) => {
 
           graph.addCell(finalWire)
      }
-     if (exp === '1') return <h6>Diagram will be shown here</h6>
 
      return <div ref={diagramRef} />
 }
