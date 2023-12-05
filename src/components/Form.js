@@ -54,7 +54,7 @@ export default function Form() {
       <TextField
         id='standard-basic'
         variant='standard'
-        label={JSON.stringify(userExpression)}
+        label="Maxterm or Minterm"
         value={inputValue}
         onChange={handleNewExpression}
       />

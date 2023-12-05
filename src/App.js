@@ -28,7 +28,7 @@ import Result from './components/results'
 import { signOut } from './actions/auth'
 
 function App() {
-  const { method, setMethod, variables, userExpression, user, setUser, booleanExpression, setUserHistory } = useMethod();
+  const { method, setMethod, variables, userExpression, user, setUser, booleanExpression, setUserHistory, setUserExpression } = useMethod();
 
   const classes = useStyles()
   const dispatch = useDispatch()
@@ -62,6 +62,7 @@ function App() {
 
   if (userExpression.length > Math.pow(2, variables.length)) {
     alert('Expression length exceed for given variable')
+    setUserExpression(['1', '2'])
   }
 
   return (

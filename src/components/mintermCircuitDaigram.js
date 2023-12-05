@@ -9,7 +9,7 @@ import { useMethod } from '../context'
 
 
 const DiagramComponent = () => {
-  const { variables, booleanExpression, setBooleanExpression } = useMethod();
+  const { variables, booleanExpression, setBooleanExpression, method } = useMethod();
 
   const diagramRef = useRef(null)
   const { kMap, setkMap } = useSelector(state => state)
@@ -23,6 +23,7 @@ const DiagramComponent = () => {
     },
     [kMap]
   )
+
   useEffect(
     () => {
       createCircuit()
@@ -31,7 +32,6 @@ const DiagramComponent = () => {
   )
 
   function createCircuit() {
-    if (booleanExpression === '1') return <h6>Diagram will be shown here</h6>
 
     const graph = new dia.Graph()
     new dia.Paper({
@@ -119,6 +119,7 @@ const DiagramComponent = () => {
 
     graph.addCell(finalWire)
   }
+  if (booleanExpression === '1') return (<h6>Diagram will be shown here</h6>)
 
   return <div ref={diagramRef} />
 }
