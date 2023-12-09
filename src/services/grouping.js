@@ -32,10 +32,11 @@ function createMintermBooleanFunction(
 
   islands.sort((a, b) => b.area - a.area)
   console.log('before sorting ', islands)
+
   /** remove redundant that was not remove earlier */
   islands = islands.filter(island => {
     // for three and two variable
-    if (row + col < 7 && island.corner === 'col') {
+    if (island.corner === 'col') {
       if (island.area === 4) {
         visited[0][0] = true
         visited[0][3] = true
@@ -43,6 +44,7 @@ function createMintermBooleanFunction(
         visited[1][3] = true
       }
       if (island.area === 2) {
+        console.log("thisbis trueu");
         visited[island.start.y][island.start.x] = true
         visited[island.end.y][island.end.x] = true
       }
@@ -56,8 +58,13 @@ function createMintermBooleanFunction(
 
     for (let j = island.start.y; j <= island.end.y; j++) {
       for (let i = island.start.x; i <= island.end.x; i++) {
+
+
+
+
         // for first table
         if (island.table === 0 && visited[j][i] === false) {
+          console.log("this is true");
           visited[j][i] = true
           flag = true
         }
@@ -86,14 +93,14 @@ function createMintermBooleanFunction(
           visited[j + 4][i + 4] = true
           flag = true
         }
-        // if (
-        //   visited[j][i] === false &&
-        //   island.table === 3 &&
-        //   visited[j + 4][i + 4] === false
-        // ) {
-        //   visited[j + 4][i + 4] = true
-        //   flag = true
-        // }
+        if (
+          visited[j][i] === false &&
+          island.table === 3 &&
+          visited[j + 4][i + 4] === false
+        ) {
+          visited[j + 4][i + 4] = true
+          flag = true
+        }
       }
     }
     return flag
